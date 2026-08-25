@@ -12,7 +12,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
       <div className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
         <Link to="/" className="hover:text-emerald-600 transition">Categories</Link>
         <Link to="/about" className="hover:text-emerald-600 transition">About Us</Link>
-        <Link to="/admin" className="hover:text-emerald-600 transition">Admin</Link>
+        {/* Admin link has been securely removed from public view */}
       </div>
 
       <div className="flex items-center gap-4">
