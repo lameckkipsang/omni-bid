@@ -3,6 +3,8 @@ import { Clock, Gavel } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function LiveBidding() {
   // State for tracking user bid input on the featured live item
@@ -29,6 +31,14 @@ export default function LiveBidding() {
     ]);
     setBidAmount('');
   };
+
+  const allAuctions = [
+    { id: 1, title: "Premium Kajiado Land — 5 Acres", category: "REAL ESTATE", price: "2,450,000 KES", time: "02h 15m", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" },
+    { id: 2, title: "Toyota Land Cruiser VX 2019", category: "VEHICLES", price: "4,750,000 KES", time: "05h 24m", img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" },
+    { id: 3, title: "Samsung Galaxy S24 Ultra", category: "ELECTRONICS", price: "115,000 KES", time: "01d 12h", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80" },
+    { id: 4, title: "Mombasa 2-Br Nyali Apt", category: "REAL ESTATE", price: "8,500,000 KES", time: "04d 10h", img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" },
+    { id: 5, title: "Massey Ferguson 375 Tractor", category: "HEAVY EQUIP", price: "1,600,000 KES", time: "12h 45m", img: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80" }
+  ];
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 space-y-12">
@@ -103,8 +113,8 @@ export default function LiveBidding() {
           <div className="space-y-3 pt-4 border-t border-border">
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Live Bid Activity</h4>
             <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
-              {bidHistory.map((bid, index) => (
-                <div key={index} className="flex justify-between items-center text-xs bg-background p-2.5 rounded-lg border border-border">
+              {bidHistory.map((bid, bidIndex) => (
+                <div key={bidIndex} className="flex justify-between items-center text-xs bg-background p-2.5 rounded-lg border border-border">
                   <span className="font-semibold">{bid.bidder}</span>
                   <span className="text-emerald-600 font-bold">{bid.amount}</span>
                   <span className="text-muted-foreground">{bid.time}</span>
@@ -115,6 +125,77 @@ export default function LiveBidding() {
         </div>
 
       </div>
+
+      {/* CATEGORY TABS & AUCTION GRID */}
+      <Tabs defaultValue="all" className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h3 className="text-xl font-bold">Explore All Live Auctions</h3>
+          <TabsList className="bg-muted">
+            <TabsTrigger value="all">All Items</TabsTrigger>
+            <TabsTrigger value="real estate">Real Estate</TabsTrigger>
+            <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
+            <TabsTrigger value="electronics">Electronics</TabsTrigger>
+          </TabsList>
+        </div>
+
+        <TabsContent value="all" className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {allAuctions.map((auction, auctionIndex) => (
+            <Card key={auctionIndex} className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+              <div className="h-48 overflow-hidden">
+                <img src={auction.img} alt={auction.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+              </div>
+              <CardHeader className="p-5 pb-2">
+                <Badge variant="secondary" className="w-fit text-[10px] bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 mb-2 tracking-wider">
+                  {auction.category}
+                </Badge>
+                <CardTitle className="text-base line-clamp-1">{auction.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-5 pt-0 flex-1">
+                <p className="text-xl font-bold text-emerald-600">{auction.price}</p>
+              </CardContent>
+              <CardFooter className="p-5 pt-0 flex justify-between items-center bg-muted/20 border-t border-border/50">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mt-3">
+                  <Clock className="w-4 h-4 text-amber-500" /> {auction.time} left
+                </div>
+                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 mt-3 text-white">Bid Now</Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </TabsContent>
+
+        <TabsContent value="real estate" className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {allAuctions.filter(a => a.category === "REAL ESTATE").map((auction, reIndex) => (
+            <Card key={reIndex} className="overflow-hidden flex flex-col">
+              <div className="h-48 overflow-hidden"><img src={auction.img} alt={auction.title} className="w-full h-full object-cover" /></div>
+              <CardHeader className="p-5 pb-2"><Badge className="w-fit text-[10px]">{auction.category}</Badge><CardTitle className="text-base">{auction.title}</CardTitle></CardHeader>
+              <CardContent className="p-5 pt-0"><p className="text-xl font-bold text-emerald-600">{auction.price}</p></CardContent>
+              <CardFooter className="p-5 pt-0 flex justify-between items-center bg-muted/20 border-t"><span className="text-xs text-muted-foreground">{auction.time} left</span><Button size="sm" className="bg-emerald-600 text-white">Bid Now</Button></CardFooter>
+            </Card>
+          ))}
+        </TabsContent>
+
+        <TabsContent value="vehicles" className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {allAuctions.filter(a => a.category === "VEHICLES").map((auction, vehIndex) => (
+            <Card key={vehIndex} className="overflow-hidden flex flex-col">
+              <div className="h-48 overflow-hidden"><img src={auction.img} alt={auction.title} className="w-full h-full object-cover" /></div>
+              <CardHeader className="p-5 pb-2"><Badge className="w-fit text-[10px]">{auction.category}</Badge><CardTitle className="text-base">{auction.title}</CardTitle></CardHeader>
+              <CardContent className="p-5 pt-0"><p className="text-xl font-bold text-emerald-600">{auction.price}</p></CardContent>
+              <CardFooter className="p-5 pt-0 flex justify-between items-center bg-muted/20 border-t"><span className="text-xs text-muted-foreground">{auction.time} left</span><Button size="sm" className="bg-emerald-600 text-white">Bid Now</Button></CardFooter>
+            </Card>
+          ))}
+        </TabsContent>
+
+        <TabsContent value="electronics" className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {allAuctions.filter(a => a.category === "ELECTRONICS").map((auction, elecIndex) => (
+            <Card key={elecIndex} className="overflow-hidden flex flex-col">
+              <div className="h-48 overflow-hidden"><img src={auction.img} alt={auction.title} className="w-full h-full object-cover" /></div>
+              <CardHeader className="p-5 pb-2"><Badge className="w-fit text-[10px]">{auction.category}</Badge><CardTitle className="text-base">{auction.title}</CardTitle></CardHeader>
+              <CardContent className="p-5 pt-0"><p className="text-xl font-bold text-emerald-600">{auction.price}</p></CardContent>
+              <CardFooter className="p-5 pt-0 flex justify-between items-center bg-muted/20 border-t"><span className="text-xs text-muted-foreground">{auction.time} left</span><Button size="sm" className="bg-emerald-600 text-white">Bid Now</Button></CardFooter>
+            </Card>
+          ))}
+        </TabsContent>
+      </Tabs>
 
     </div>
   );
