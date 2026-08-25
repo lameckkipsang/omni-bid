@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShieldCheck, Lock, TrendingUp } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Lock, TrendingUp, MapPin } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -41,32 +41,61 @@ export default function Home() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
-            <CardHeader>
-              <ShieldCheck className="w-8 h-8 text-emerald-600 mb-2" />
-              <CardTitle>ID Verification</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Mandatory national ID checks eliminate fraud and fake bidders.</p>
-            </CardContent>
+            <CardHeader><ShieldCheck className="w-8 h-8 text-emerald-600 mb-2" /><CardTitle>ID Verification</CardTitle></CardHeader>
+            <CardContent><p className="text-sm text-muted-foreground">Mandatory national ID checks eliminate fraud and fake bidders.</p></CardContent>
           </Card>
           <Card>
-            <CardHeader>
-              <Lock className="w-8 h-8 text-emerald-600 mb-2" />
-              <CardTitle>Secure Escrow</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Bank-grade escrow accounts protect earnest money deposits.</p>
-            </CardContent>
+            <CardHeader><Lock className="w-8 h-8 text-emerald-600 mb-2" /><CardTitle>Secure Escrow</CardTitle></CardHeader>
+            <CardContent><p className="text-sm text-muted-foreground">Bank-grade escrow accounts protect earnest money deposits.</p></CardContent>
           </Card>
           <Card>
-            <CardHeader>
-              <TrendingUp className="w-8 h-8 text-emerald-600 mb-2" />
-              <CardTitle>Multi-Category</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">From vast land parcels to flagship vehicles, everything on one dashboard.</p>
-            </CardContent>
+            <CardHeader><TrendingUp className="w-8 h-8 text-emerald-600 mb-2" /><CardTitle>Multi-Category</CardTitle></CardHeader>
+            <CardContent><p className="text-sm text-muted-foreground">From vast land parcels to flagship vehicles, everything on one dashboard.</p></CardContent>
           </Card>
+        </div>
+      </section>
+
+      {/* 3. ABOUT US & 4. OFFICES */}
+      <section className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="space-y-6">
+          <h2 className="text-3xl font-bold">Kenya's Trusted Modern Auction Platform</h2>
+          <p className="text-muted-foreground leading-relaxed">
+            OmniBid brings fair, public price discovery to high-value assets across East Africa. By combining strict identity verification with state-of-the-art live technology, we deliver a bidding ecosystem where trust is absolute.
+          </p>
+          <div className="flex gap-10 pt-4">
+            <div>
+              <p className="text-4xl font-bold text-emerald-600">100%</p>
+              <p className="text-sm font-semibold text-muted-foreground uppercase mt-1">Verified Bidders</p>
+            </div>
+            <div>
+              <p className="text-4xl font-bold text-emerald-600">1.2B</p>
+              <p className="text-sm font-semibold text-muted-foreground uppercase mt-1">KES Transacted</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="space-y-6 bg-muted/50 p-8 rounded-2xl border border-border">
+          <h3 className="text-xl font-bold">Visit Our Offices</h3>
+          <div className="space-y-4">
+            <Card className="flex items-center p-5 gap-4 shadow-sm">
+              <div className="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-full">
+                <MapPin className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-lg">Nairobi Office</h4>
+                <p className="text-sm text-muted-foreground">OmniBid Plaza, Wood Avenue, Kilimani</p>
+              </div>
+            </Card>
+            <Card className="flex items-center p-5 gap-4 shadow-sm">
+              <div className="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-full">
+                <MapPin className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-lg">Mombasa Office</h4>
+                <p className="text-sm text-muted-foreground">Shoreline Business Park, Nyali Road</p>
+              </div>
+            </Card>
+          </div>
         </div>
       </section>
 
