@@ -3,30 +3,53 @@ import { ArrowRight, ShieldCheck, Lock, TrendingUp, MapPin, Clock } from 'lucide
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import lameckProfile from '../assets/lameck2.jpeg'; 
+import lameckProfile from '../assets/lameck2.jpeg';
 
 export default function Home() {
-  // Data arrays for dynamic rendering
   const team = [
     { 
       name: "Lameck Kipsang", 
       role: "Founder & Lead Developer",
-      img: lameckProfile 
+      img: lameckProfile
     }
   ];
 
   const featuredAuctions = [
-    { title: "Toyota Land Cruiser VX 2019", category: "VEHICLES", price: "4,750,000 KES", time: "05h 24m", img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" },
-    { title: "Samsung Galaxy S24 Ultra", category: "ELECTRONICS", price: "115,000 KES", time: "01d 12h", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80" },
-    { title: "Mombasa 2-Br Nyali Apt", category: "REAL ESTATE", price: "8,500,000 KES", time: "04d 10h", img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" },
-    { title: "Massey Ferguson 375 Tractor", category: "HEAVY EQUIP", price: "1,600,000 KES", time: "12h 45m", img: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80" }
+    { 
+      title: "Toyota Land Cruiser VX 2019", 
+      category: "VEHICLES", 
+      price: "4,750,000 KES", 
+      time: "05h 24m", 
+      img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" 
+    },
+    { 
+      title: "Samsung Galaxy S24 Ultra", 
+      category: "ELECTRONICS", 
+      price: "115,000 KES", 
+      time: "01d 12h", 
+      img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80" 
+    },
+    { 
+      title: "Mombasa 2-Br Nyali Apt", 
+      category: "REAL ESTATE", 
+      price: "8,500,000 KES", 
+      time: "04d 10h", 
+      img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" 
+    },
+    { 
+      title: "Massey Ferguson 375 Tractor", 
+      category: "HEAVY EQUIP", 
+      price: "1,600,000 KES", 
+      time: "12h 45m", 
+      img: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80" 
+    }
   ];
 
   return (
     <div className="space-y-20 pb-20">
       
       {/* 1. HERO SECTION */}
-      <header className="relative bg-zinc-950 text-white py-24 px-6 overflow-hidden">
+      <header className="relative bg-slate-950 text-white py-24 px-6 overflow-hidden">
         <div className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef')] bg-cover bg-center" />
         <div className="relative max-w-5xl mx-auto space-y-6">
           <Badge variant="outline" className="text-emerald-400 border-emerald-500 bg-emerald-500/10 px-3 py-1 text-xs">
@@ -58,16 +81,31 @@ export default function Home() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
-            <CardHeader><ShieldCheck className="w-8 h-8 text-emerald-600 mb-2" /><CardTitle>ID Verification</CardTitle></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground">Mandatory national ID checks eliminate fraud and fake bidders.</p></CardContent>
+            <CardHeader>
+              <ShieldCheck className="w-8 h-8 text-emerald-600 mb-2" />
+              <CardTitle>ID Verification</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Mandatory national ID checks eliminate fraud and fake bidders.</p>
+            </CardContent>
           </Card>
           <Card>
-            <CardHeader><Lock className="w-8 h-8 text-emerald-600 mb-2" /><CardTitle>Secure Escrow</CardTitle></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground">Bank-grade escrow accounts protect earnest money deposits.</p></CardContent>
+            <CardHeader>
+              <Lock className="w-8 h-8 text-emerald-600 mb-2" />
+              <CardTitle>Secure Escrow</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Bank-grade escrow accounts protect earnest money deposits.</p>
+            </CardContent>
           </Card>
           <Card>
-            <CardHeader><TrendingUp className="w-8 h-8 text-emerald-600 mb-2" /><CardTitle>Multi-Category</CardTitle></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground">From vast land parcels to flagship vehicles, everything on one dashboard.</p></CardContent>
+            <CardHeader>
+              <TrendingUp className="w-8 h-8 text-emerald-600 mb-2" />
+              <CardTitle>Multi-Category</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">From vast land parcels to flagship vehicles, everything on one dashboard.</p>
+            </CardContent>
           </Card>
         </div>
       </section>

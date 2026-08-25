@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
+/* 1. Dark mode trigger */
 @custom-variant dark (&:where(.dark, .dark *));
 
-
+/* 2. Map Shadcn variables to Tailwind theme */
 @theme {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -13,30 +14,35 @@
   --color-card-foreground: hsl(var(--card-foreground));
 }
 
-
+/* 3. Define Light & Deep Navy Dark Mode Variables */
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --border: 240 5.9% 90%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --card-foreground: 222.2 84% 4.9%;
+    --border: 214.3 31.8% 91.4%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
   }
   
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    /* Deep Navy Slate Canvas */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    /* Slightly elevated navy blue surface for Cards */
+    --card: 222.2 47% 10%;
+    --card-foreground: 210 40% 98%;
+
+    /* Navy borders and muted fills */
+    --border: 217.2 32.6% 17.5%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
   }
 }
 
-
+/* 4. Global Body Styling */
 @layer base {
   * {
     @apply border-border;

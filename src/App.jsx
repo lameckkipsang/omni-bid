@@ -7,7 +7,6 @@ import Home from './pages/Home';
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
 
-  // This ensures the <html> tag gets the .dark class
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -18,7 +17,7 @@ export default function App() {
 
   return (
     <Router>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-300">
         <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
         
         <main className="flex-1">

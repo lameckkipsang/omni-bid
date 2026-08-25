@@ -44,7 +44,7 @@ export default function Footer() {
             <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Privacy Policy</Link></li>
             <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Terms of Use</Link></li>
             <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Bidding Rules</Link></li>
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Anti-Fraud</Link></li>
+            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Anti-Fraud</Link></li>
           </ul>
         </div>
       </div>
@@ -58,7 +58,7 @@ export default function Footer() {
           <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaTwitter className="w-5 h-5" /></Link>
           <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaFacebook className="w-5 h-5" /></Link>
           <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaInstagram className="w-5 h-5" /></Link>
-          <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaLinkedin className="w-5 h-5" /></Link>
+          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaLinkedin className="w-5 h-5" /></Link>
         </div>
       </div>
     </footer>
