@@ -18,13 +18,13 @@ export default function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-300">
+      <div className="min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden transition-colors duration-300">
         <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
         
-        <main className="flex-1">
+        <main className="flex-1 w-full">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/auctions" element={<LiveBidding />} /> 
+            <Route path="/auctions" element={<LiveBidding />} />
           </Routes>
         </main>
         
