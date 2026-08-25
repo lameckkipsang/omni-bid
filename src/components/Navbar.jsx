@@ -11,6 +11,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
       
       <div className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
         <Link to="/" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Categories</Link>
+        <Link to="/auctions" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Live Bidding</Link>
         <Link to="/about" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">About Us</Link>
       </div>
 
