@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Gavel, Twitter, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Gavel } from 'lucide-react';
+import { FaTwitter, FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 export default function Footer() {
   return (
@@ -54,10 +55,11 @@ export default function Footer() {
           © 2026 OmniBid Platform Kenya. All rights reserved.
         </p>
         <div className="flex gap-4 text-zinc-500">
-          <Link to="#" className="hover:text-emerald-500 transition-colors"><Twitter className="w-4 h-4" /></Link>
-          <Link to="#" className="hover:text-emerald-500 transition-colors"><Facebook className="w-4 h-4" /></Link>
-          <Link to="#" className="hover:text-emerald-500 transition-colors"><Instagram className="w-4 h-4" /></Link>
-          <Link to="#" className="hover:text-emerald-500 transition-colors"><Linkedin className="w-4 h-4" /></Link>
+          {/* Replaced Lucide icons with FontAwesome icons */}
+          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaTwitter className="w-5 h-5" /></Link>
+          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaFacebook className="w-5 h-5" /></Link>
+          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaInstagram className="w-5 h-5" /></Link>
+          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaLinkedin className="w-5 h-5" /></Link>
         </div>
       </div>
     </footer>
