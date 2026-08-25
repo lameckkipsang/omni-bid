@@ -4,58 +4,61 @@ import { FaTwitter, FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-300 py-12 border-t border-slate-800">
+    <footer className="bg-white dark:bg-slate-950 text-gray-600 dark:text-slate-400 py-12 border-t border-gray-200 dark:border-slate-800 transition-colors duration-300">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
         
+        {/* Brand & Description */}
         <div className="md:col-span-1 space-y-4">
-          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-emerald-500">
+          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-emerald-600 dark:text-emerald-500">
             <Gavel className="w-6 h-6" /> OmniBid
           </Link>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <p className="text-xs text-gray-500 dark:text-slate-400 leading-relaxed">
             Kenya's most trusted, secure multi-category auction platform. Redefining modern asset liquidation and bidding integrity.
           </p>
         </div>
 
+        {/* Link Columns */}
         <div>
-          <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wider mb-4">Categories</h4>
-          <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Real Estate</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Vehicles</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Electronics</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Heavy Equipment</Link></li>
+          <h4 className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-wider mb-4">Categories</h4>
+          <ul className="space-y-2 text-sm">
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Real Estate</Link></li>
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Vehicles</Link></li>
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Electronics</Link></li>
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Heavy Equipment</Link></li>
           </ul>
         </div>
 
         <div>
-          <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wider mb-4">Platform</h4>
-          <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Live Auctions</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">How It Works</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Verification</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Office Locations</Link></li>
+          <h4 className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-wider mb-4">Platform</h4>
+          <ul className="space-y-2 text-sm">
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Live Auctions</Link></li>
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">How It Works</Link></li>
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Verification</Link></li>
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Office Locations</Link></li>
           </ul>
         </div>
 
         <div>
-          <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wider mb-4">Legal</h4>
-          <ul className="space-y-2 text-sm text-slate-400">
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Privacy Policy</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Terms of Use</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Bidding Rules</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Anti-Fraud</Link></li>
+          <h4 className="text-xs font-bold text-gray-900 dark:text-slate-100 uppercase tracking-wider mb-4">Legal</h4>
+          <ul className="space-y-2 text-sm">
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Privacy Policy</Link></li>
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Terms of Use</Link></li>
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Bidding Rules</Link></li>
+            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Anti-Fraud</Link></li>
           </ul>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p className="text-xs text-slate-500">
+      {/* Copyright Bar */}
+      <div className="max-w-6xl mx-auto px-6 mt-12 pt-8 border-t border-gray-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p className="text-xs text-gray-500 dark:text-slate-500">
           © 2026 OmniBid Platform Kenya. All rights reserved.
         </p>
-        <div className="flex gap-4 text-slate-400">
-          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaTwitter className="w-5 h-5" /></Link>
-          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaFacebook className="w-5 h-5" /></Link>
-          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaInstagram className="w-5 h-5" /></Link>
-          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaLinkedin className="w-5 h-5" /></Link>
+        <div className="flex gap-4 text-gray-400 dark:text-slate-400">
+          <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaTwitter className="w-5 h-5" /></Link>
+          <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaFacebook className="w-5 h-5" /></Link>
+          <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaInstagram className="w-5 h-5" /></Link>
+          <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaLinkedin className="w-5 h-5" /></Link>
         </div>
       </div>
     </footer>
