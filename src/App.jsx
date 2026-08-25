@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import LiveBidding from './pages/LiveBidding';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -23,6 +24,7 @@ export default function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/auctions" element={<LiveBidding />} /> 
           </Routes>
         </main>
         
