@@ -5,31 +5,29 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 
 export default function App() {
-  // State to manage dark mode toggle from the Navbar
   const [darkMode, setDarkMode] = useState(false);
 
-  // Effect to apply the dark class to the HTML document
+  // This ensures the <html> tag gets the .dark class
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode);
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [darkMode]);
 
   return (
     <Router>
-     
-      <div className="min-h-screen bg-background text-foreground flex flex-col transition-colors duration-200">
-        
-       
+      <div className="min-h-screen flex flex-col">
         <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
         
-       
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
           </Routes>
         </main>
-  
-        <Footer />
         
+        <Footer />
       </div>
     </Router>
   );
