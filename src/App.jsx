@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import LiveBidding from './pages/LiveBidding';
 import Login from './pages/Login';
+import Register from './pages/Register';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/auctions" element={<LiveBidding />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </main>
         
