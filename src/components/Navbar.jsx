@@ -19,10 +19,11 @@ export default function Navbar({ darkMode, setDarkMode }) {
         <Button variant="ghost" size="icon" onClick={() => setDarkMode(!darkMode)}>
           {darkMode ? <Sun className="w-5 h-5 text-muted-foreground" /> : <Moon className="w-5 h-5 text-muted-foreground" />}
         </Button>
-        <Link to="/auth">
+        
+        <Link to="/login">
           <Button variant="outline" className="border-border">Log In</Button>
         </Link>
-        <Link to="/auth">
+        <Link to="/register">
           <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">Sign Up</Button>
         </Link>
       </div>
