@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Clock, Gavel } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import { auth } from '../lib/firebase';
 
 export default function LiveBidding() {
   const [bidAmount, setBidAmount] = useState('');
@@ -14,20 +17,31 @@ export default function LiveBidding() {
     { bidder: "ID No. ***411", amount: "2,400,000 KES", time: "14 mins ago" },
     { bidder: "ID No. ***655", amount: "2,300,000 KES", time: "1 hour ago" }
   ]);
+  const navigate = useNavigate();
 
   const handlePlaceBid = (e) => {
     e.preventDefault();
-    const numericBid = parseInt(bidAmount);
-    if (!numericBid || numericBid <= currentBid) {
-      alert("Please enter a bid higher than the current active amount.");
+
+    // 1. Authentication Guard: Check if user is logged in with Firebase
+    if (!auth.currentUser) {
+      toast.error("Please log in or sign up to place a live bid.");
+      navigate('/login');
       return;
     }
+
+    const numericBid = parseInt(bidAmount);
+    if (!numericBid || numericBid <= currentBid) {
+      toast.error("Please enter a bid higher than the current active amount.");
+      return;
+    }
+
     setCurrentBid(numericBid);
     setBidHistory([
-      { bidder: "You (Verified ID)", amount: `${numericBid.toLocaleString()} KES`, time: "Just now" },
+      { bidder: auth.currentUser.displayName || "Verified Bidder", amount: `${numericBid.toLocaleString()} KES`, time: "Just now" },
       ...bidHistory
     ]);
     setBidAmount('');
+    toast.success("Bid placed successfully!");
   };
 
   const allAuctions = [
@@ -40,7 +54,6 @@ export default function LiveBidding() {
 
   return (
     <div className="w-full min-h-screen bg-background">
-      {/* Changed to container mx-auto for strict max-width enforcement */}
       <div className="container mx-auto px-4 md:px-6 py-10 flex flex-col gap-10 overflow-hidden">
         
         {/* Page Header */}
@@ -58,10 +71,9 @@ export default function LiveBidding() {
           </div>
         </div>
 
-        {/* FEATURED LIVE ITEM & BIDDING INTERFACE - Switched to strict Flexbox */}
+        {/* FEATURED LIVE ITEM & BIDDING INTERFACE */}
         <div className="bg-card border border-border rounded-2xl p-6 shadow-sm flex flex-col lg:flex-row gap-8 w-full">
           
-          {/* Item Preview (Takes up 2/3 width) */}
           <div className="flex-1 lg:w-2/3 flex flex-col gap-4">
             <div className="relative w-full h-72 md:h-80 rounded-xl overflow-hidden border border-border">
               <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef" alt="Kajiado Land" className="w-full h-full object-cover" />
@@ -77,7 +89,6 @@ export default function LiveBidding() {
             </div>
           </div>
 
-          {/* Live Bidding Console (Takes up 1/3 width) */}
           <div className="w-full lg:w-1/3 flex-shrink-0 bg-muted/30 border border-border rounded-xl p-6 flex flex-col justify-between gap-6">
             <div className="space-y-4 w-full">
               <div className="flex justify-between items-center w-full">
@@ -109,7 +120,6 @@ export default function LiveBidding() {
               </form>
             </div>
 
-            {/* Live Bid Stream */}
             <div className="space-y-3 pt-4 border-t border-border w-full">
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Live Bid Activity</h4>
               <div className="flex flex-col gap-2 max-h-36 overflow-y-auto pr-1 w-full">
@@ -159,7 +169,20 @@ export default function LiveBidding() {
                       <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mt-3">
                         <Clock className="w-4 h-4 text-amber-500" /> {auction.time} left
                       </div>
-                      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 mt-3 text-white">Bid Now</Button>
+                      <Button 
+                        size="sm" 
+                        className="bg-emerald-600 hover:bg-emerald-700 mt-3 text-white"
+                        onClick={() => {
+                          if (!auth.currentUser) {
+                            toast.error("Please log in or sign up to bid on items.");
+                            navigate('/login');
+                          } else {
+                            toast.info(`Selected ${auction.title} for bidding.`);
+                          }
+                        }}
+                      >
+                        Bid Now
+                      </Button>
                     </CardFooter>
                   </Card>
                 ))}
