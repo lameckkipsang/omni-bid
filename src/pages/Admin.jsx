@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ShieldAlert } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ShieldAlert, Loader2 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { db } from '../lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { toast } from "sonner";
+import { db, auth } from '../lib/firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import ManageAuctions from '../components/admin/ManageAuctions';
 import ManageUsers from '../components/admin/ManageUsers';
 import PlatformAnalytics from '../components/admin/PlatformAnalytics';
@@ -11,8 +14,51 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState("auctions");
   const [auctions, setAuctions] = useState([]);
   const [users, setUsers] = useState([]);
+  
+  // Security State
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const navigate = useNavigate();
 
+  // 1. The Bouncer: Check Firebase Auth Status AND Firestore Role
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          // Look up this user in the Firestore database by their email
+          const q = query(collection(db, "users"), where("email", "==", user.email));
+          const querySnapshot = await getDocs(q);
+          
+          let isAdmin = false;
+          querySnapshot.forEach((doc) => {
+            if (doc.data().role === "admin") {
+              isAdmin = true;
+            }
+          });
+
+          if (isAdmin) {
+            setIsAuthorized(true);
+            setIsCheckingAuth(false);
+          } else {
+            toast.error("Unauthorized access. Admin privileges required.");
+            navigate('/login');
+          }
+        } catch (error) {
+          console.error("Error verifying admin role:", error);
+          navigate('/login');
+        }
+      } else {
+        navigate('/login'); // Not logged in at all
+      }
+    });
+
+    return () => unsubscribe(); 
+  }, [navigate]);
+
+  // 2. Fetch Data (Only runs if the bouncer lets them in)
+  useEffect(() => {
+    if (!isAuthorized) return;
+
     const fetchData = async () => {
       try {
         const auctionsSnapshot = await getDocs(collection(db, "auctions"));
@@ -22,11 +68,23 @@ export default function Admin() {
         setUsers(usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       } catch (err) {
         console.error("Error fetching admin data:", err);
+        toast.error("Failed to fetch database records.");
       }
     };
     fetchData();
-  }, []);
+  }, [isAuthorized]);
 
+  // Show a loading spinner while checking credentials
+  if (isCheckingAuth) {
+    return (
+      <div className="w-full min-h-[80vh] flex flex-col items-center justify-center bg-background">
+        <Loader2 className="w-10 h-10 animate-spin text-emerald-600 mb-4" />
+        <p className="text-muted-foreground font-medium">Verifying database security credentials...</p>
+      </div>
+    );
+  }
+
+  // If authorized, render the dashboard
   return (
     <div className="w-full min-h-screen bg-background p-6 md:p-10">
       <div className="container mx-auto space-y-8">
