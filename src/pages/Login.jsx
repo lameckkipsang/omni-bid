@@ -4,6 +4,7 @@ import { Gavel, ShieldCheck, Lock, Mail, ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { toast } from "sonner";
 import { auth, googleProvider } from '../lib/firebase';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 
@@ -11,18 +12,17 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate('/auctions'); // Redirect to auctions on success
+      toast.success("Welcome back! Login successful.");
+      navigate('/auctions');
     } catch (err) {
-      setError("Invalid email or password. Please try again.");
+      toast.error("Invalid email or password. Please try again.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -31,12 +31,12 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
-    setError('');
     try {
       await signInWithPopup(auth, googleProvider);
-      navigate('/auctions'); // Redirect to auctions on success
+      toast.success("Google Authentication successful!");
+      navigate('/auctions');
     } catch (err) {
-      setError("Google sign-in failed. Please try again.");
+      toast.error("Google sign-in failed. Please try again.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -46,7 +46,6 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row w-full overflow-hidden transition-colors duration-300">
       
-      {/* Branding */}
       <div className="hidden md:flex flex-col justify-between w-1/2 bg-muted/30 p-12 lg:p-20 border-r border-border">
         <div>
           <Link to="/" className="flex items-center gap-2 text-3xl font-extrabold text-emerald-600 dark:text-emerald-500 mb-8">
@@ -70,7 +69,6 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Login Form */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-6">
           
@@ -87,7 +85,6 @@ export default function Login() {
             </CardHeader>
             <CardContent>
               
-              {/* Google Sign-In Button */}
               <div className="flex flex-col gap-4 mb-6">
                 <Button 
                   type="button" 
@@ -115,10 +112,6 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Error Message Display */}
-              {error && <p className="text-sm text-red-500 mb-4 font-medium">{error}</p>}
-
-              {/* Email Form */}
               <form onSubmit={handleEmailLogin} className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase">Email Address</label>
