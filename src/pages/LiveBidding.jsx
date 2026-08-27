@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Gavel } from 'lucide-react';
+import { Clock, Gavel, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,8 +19,9 @@ export default function LiveBidding() {
   ]);
   const navigate = useNavigate();
 
-  // Real-time ticking countdown timer state
-  const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 15, seconds: 30 });
+  // Countdown timer state (set low for testing, e.g., 5 seconds, or keep at hours/minutes)
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 10 });
+  const [isEnded, setIsEnded] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -31,8 +32,11 @@ export default function LiveBidding() {
           return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
         } else if (prev.hours > 0) {
           return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        } else {
+          setIsEnded(true);
+          clearInterval(timer);
+          return prev;
         }
-        return prev; // Stops at zero
       });
     }, 1000);
 
@@ -42,7 +46,11 @@ export default function LiveBidding() {
   const handlePlaceBid = (e) => {
     e.preventDefault();
 
-    // 1. Authentication Guard: Check if user is logged in with Firebase
+    if (isEnded) {
+      toast.error("This auction has ended. Bidding is closed.");
+      return;
+    }
+
     if (!auth.currentUser) {
       toast.error("Please log in or sign up to place a live bid.");
       navigate('/login');
@@ -97,8 +105,8 @@ export default function LiveBidding() {
           <div className="flex-1 lg:w-2/3 flex flex-col gap-4">
             <div className="relative w-full h-72 md:h-80 rounded-xl overflow-hidden border border-border">
               <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef" alt="Kajiado Land" className="w-full h-full object-cover" />
-              <Badge className="absolute top-4 left-4 bg-emerald-600 text-white font-bold px-3 py-1">
-                FEATURED ITEM #1
+              <Badge className={`absolute top-4 left-4 font-bold px-3 py-1 text-white ${isEnded ? 'bg-amber-600' : 'bg-emerald-600'}`}>
+                {isEnded ? "AUCTION CLOSED (Archived)" : "FEATURED ITEM #1"}
               </Badge>
             </div>
             <div className="w-full">
@@ -112,39 +120,53 @@ export default function LiveBidding() {
           <div className="w-full lg:w-1/3 flex-shrink-0 bg-muted/30 border border-border rounded-xl p-6 flex flex-col justify-between gap-6">
             <div className="space-y-4 w-full">
               <div className="flex justify-between items-center w-full">
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Current Highest Bid</span>
-                <div className="flex items-center gap-1 text-xs text-amber-500 font-medium">
-                  <Clock className="w-3.5 h-3.5 animate-pulse" /> 
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  {isEnded ? "Final Winning Bid" : "Current Highest Bid"}
+                </span>
+                <div className={`flex items-center gap-1 text-xs font-medium ${isEnded ? 'text-red-500 font-bold' : 'text-amber-500'}`}>
+                  <Clock className="w-3.5 h-3.5" /> 
                   <span>
-                    {String(timeLeft.hours).padStart(2, '0')}h : {String(timeLeft.minutes).padStart(2, '0')}m : {String(timeLeft.seconds).padStart(2, '0')}s left
+                    {isEnded ? "Live Bidding Ended" : `${String(timeLeft.hours).padStart(2, '0')}h : ${String(timeLeft.minutes).padStart(2, '0')}m : ${String(timeLeft.seconds).padStart(2, '0')}s left`}
                   </span>
                 </div>
               </div>
+
               <p className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">
                 {currentBid.toLocaleString()} KES
               </p>
 
-              <form onSubmit={handlePlaceBid} className="space-y-3 pt-2 w-full">
-                <label className="text-xs font-semibold text-muted-foreground">
-                  Place Your Bid (Min: {(currentBid + 50000).toLocaleString()} KES)
-                </label>
-                <div className="flex gap-2 w-full">
-                  <Input 
-                    type="number" 
-                    placeholder="Enter amount..." 
-                    value={bidAmount}
-                    onChange={(e) => setBidAmount(e.target.value)}
-                    className="bg-background flex-1"
-                  />
-                  <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1 flex-shrink-0">
-                    <Gavel className="w-4 h-4" /> Bid
-                  </Button>
+              {/* Bidding form / Ended Notice */}
+              {isEnded ? (
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3 text-amber-600 dark:text-amber-400">
+                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <div className="text-xs space-y-1">
+                    <p className="font-bold">Live Bidding Ended</p>
+                    <p>This auction is now closed. Final audit is underway. Listing will remain archived for 48 hours before removal.</p>
+                  </div>
                 </div>
-              </form>
+              ) : (
+                <form onSubmit={handlePlaceBid} className="space-y-3 pt-2 w-full">
+                  <label className="text-xs font-semibold text-muted-foreground">
+                    Place Your Bid (Min: {(currentBid + 50000).toLocaleString()} KES)
+                  </label>
+                  <div className="flex gap-2 w-full">
+                    <Input 
+                      type="number" 
+                      placeholder="Enter amount..." 
+                      value={bidAmount}
+                      onChange={(e) => setBidAmount(e.target.value)}
+                      className="bg-background flex-1"
+                    />
+                    <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1 flex-shrink-0">
+                      <Gavel className="w-4 h-4" /> Bid
+                    </Button>
+                  </div>
+                </form>
+              )}
             </div>
 
             <div className="space-y-3 pt-4 border-t border-border w-full">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Live Bid Activity</h4>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Final Bid Activity</h4>
               <div className="flex flex-col gap-2 max-h-36 overflow-y-auto pr-1 w-full">
                 {bidHistory.map((bid, bidIndex) => (
                   <div key={bidIndex} className="flex justify-between items-center text-xs bg-background p-3 rounded-lg border border-border w-full">
