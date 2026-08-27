@@ -90,14 +90,15 @@ export default function Admin() {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-muted">
-            <TabsTrigger value="auctions">Manage Auctions</TabsTrigger>
-            <TabsTrigger value="users">Manage Users</TabsTrigger>
-            <TabsTrigger value="analytics">Platform Statistics</TabsTrigger>
+        {/* FIX APPLIED HERE: Added flex and flex-col to force top-to-bottom stacking */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col w-full space-y-6">
+          <TabsList className="inline-flex h-auto flex-wrap items-center justify-start rounded-xl bg-muted p-1 text-muted-foreground w-full sm:w-max border border-border">
+            <TabsTrigger value="auctions" className="px-6 py-2.5">Manage Auctions</TabsTrigger>
+            <TabsTrigger value="users" className="px-6 py-2.5">Manage Users</TabsTrigger>
+            <TabsTrigger value="analytics" className="px-6 py-2.5">Platform Statistics</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="auctions">
+          <TabsContent value="auctions" className="w-full outline-none focus:outline-none">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               
               <Card className="border-border shadow-sm lg:col-span-1">
@@ -118,7 +119,7 @@ export default function Admin() {
                       <select 
                         value={category} 
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm"
+                        className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm outline-none"
                       >
                         <option value="REAL ESTATE">REAL ESTATE</option>
                         <option value="VEHICLES">VEHICLES</option>
@@ -176,9 +177,9 @@ export default function Admin() {
             </div>
           </TabsContent>
           
-          <TabsContent value="users"></TabsContent>
+          <TabsContent value="users" className="w-full outline-none focus:outline-none"></TabsContent>
           
-          <TabsContent value="analytics"></TabsContent>
+          <TabsContent value="analytics" className="w-full outline-none focus:outline-none"></TabsContent>
         </Tabs>
 
       </div>
