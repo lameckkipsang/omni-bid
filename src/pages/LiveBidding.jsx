@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Clock, Gavel } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,26 @@ export default function LiveBidding() {
     { bidder: "ID No. ***655", amount: "2,300,000 KES", time: "1 hour ago" }
   ]);
   const navigate = useNavigate();
+
+  // Real-time ticking countdown timer state
+  const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 15, seconds: 30 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+        } else if (prev.hours > 0) {
+          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        }
+        return prev; // Stops at zero
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const handlePlaceBid = (e) => {
     e.preventDefault();
@@ -94,7 +114,10 @@ export default function LiveBidding() {
               <div className="flex justify-between items-center w-full">
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Current Highest Bid</span>
                 <div className="flex items-center gap-1 text-xs text-amber-500 font-medium">
-                  <Clock className="w-3.5 h-3.5" /> 02h 15m left
+                  <Clock className="w-3.5 h-3.5 animate-pulse" /> 
+                  <span>
+                    {String(timeLeft.hours).padStart(2, '0')}h : {String(timeLeft.minutes).padStart(2, '0')}m : {String(timeLeft.seconds).padStart(2, '0')}s left
+                  </span>
                 </div>
               </div>
               <p className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">
