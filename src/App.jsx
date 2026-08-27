@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import LiveBidding from './pages/LiveBidding';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Admin from './pages/Admin';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -22,7 +23,6 @@ export default function App() {
   return (
     <Router>
       <div className="min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden transition-colors duration-300">
-        {/* Toast Notification Container */}
         <Toaster richColors position="top-right" />
         
         <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
@@ -33,6 +33,7 @@ export default function App() {
             <Route path="/auctions" element={<LiveBidding />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </main>
         
