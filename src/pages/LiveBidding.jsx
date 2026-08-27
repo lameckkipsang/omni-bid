@@ -9,6 +9,70 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { auth } from '../lib/firebase';
 
+// Helper component for individual cards so each has its own independent live countdown
+function AuctionCard({ auction, onBidClick }) {
+  const [timeLeft, setTimeLeft] = useState(auction.initialTime);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+        } else if (prev.hours > 0) {
+          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        } else if (prev.days > 0) {
+          return { days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 };
+        } else {
+          clearInterval(timer);
+          return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const isEnded = timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
+
+  return (
+    <Card className="overflow-hidden flex flex-col w-full hover:shadow-lg transition-shadow">
+      <div className="relative w-full h-48 overflow-hidden bg-muted">
+        <img src={auction.img} alt={auction.title} className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+        {isEnded && (
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+            <span className="bg-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Ended</span>
+          </div>
+        )}
+      </div>
+      <CardHeader className="p-5 pb-2">
+        <Badge variant="secondary" className="w-fit text-[10px] bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 mb-2 tracking-wider">
+          {auction.category}
+        </Badge>
+        <CardTitle className="text-base line-clamp-1">{auction.title}</CardTitle>
+      </CardHeader>
+      <CardContent className="p-5 pt-0 flex-1">
+        <p className="text-xl font-bold text-emerald-600">{auction.price}</p>
+      </CardContent>
+      <CardFooter className="p-5 pt-0 flex justify-between items-center bg-muted/20 border-t border-border/50">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mt-3">
+          <Clock className="w-4 h-4 text-amber-500" /> 
+          {isEnded ? "Closed" : `${timeLeft.days > 0 ? `${timeLeft.days}d ` : ''}${String(timeLeft.hours).padStart(2, '0')}h : ${String(timeLeft.minutes).padStart(2, '0')}m : ${String(timeLeft.seconds).padStart(2, '0')}s`}
+        </div>
+        <Button 
+          size="sm" 
+          disabled={isEnded}
+          className="bg-emerald-600 hover:bg-emerald-700 mt-3 text-white disabled:opacity-50"
+          onClick={() => onBidClick(auction)}
+        >
+          {isEnded ? "Ended" : "Bid Now"}
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}
+
 export default function LiveBidding() {
   const [bidAmount, setBidAmount] = useState('');
   const [currentBid, setCurrentBid] = useState(2450000);
@@ -19,8 +83,8 @@ export default function LiveBidding() {
   ]);
   const navigate = useNavigate();
 
-  // Countdown timer state (set low for testing, e.g., 5 seconds, or keep at hours/minutes)
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 10 });
+  // Featured Item Countdown Timer state
+  const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 15, seconds: 30 });
   const [isEnded, setIsEnded] = useState(false);
 
   useEffect(() => {
@@ -72,13 +136,31 @@ export default function LiveBidding() {
     toast.success("Bid placed successfully!");
   };
 
+  const handleGridBidClick = (auction) => {
+    if (!auth.currentUser) {
+      toast.error("Please log in or sign up to bid on items.");
+      navigate('/login');
+    } else {
+      toast.info(`Selected ${auction.title} for bidding.`);
+    }
+  };
+
+  // Auctions array with initial structured time objects for the live timers
   const allAuctions = [
-    { id: 1, title: "Premium Kajiado Land — 5 Acres", category: "REAL ESTATE", price: "2,450,000 KES", time: "02h 15m", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" },
-    { id: 2, title: "Toyota Land Cruiser VX 2019", category: "VEHICLES", price: "4,750,000 KES", time: "05h 24m", img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" },
-    { id: 3, title: "Samsung Galaxy S24 Ultra", category: "ELECTRONICS", price: "115,000 KES", time: "01d 12h", img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80" },
-    { id: 4, title: "Mombasa 2-Br Nyali Apt", category: "REAL ESTATE", price: "8,500,000 KES", time: "04d 10h", img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" },
-    { id: 5, title: "Massey Ferguson 375 Tractor", category: "HEAVY EQUIP", price: "1,600,000 KES", time: "12h 45m", img: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80" }
+    { id: 1, title: "Premium Kajiado Land — 5 Acres", category: "REAL ESTATE", price: "2,450,000 KES", initialTime: { days: 0, hours: 2, minutes: 15, seconds: 0 }, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" },
+    { id: 2, title: "Toyota Land Cruiser VX 2019", category: "VEHICLES", price: "4,750,000 KES", initialTime: { days: 0, hours: 5, minutes: 24, seconds: 0 }, img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" },
+    { id: 3, title: "Samsung Galaxy S24 Ultra", category: "ELECTRONICS", price: "115,000 KES", initialTime: { days: 1, hours: 12, minutes: 0, seconds: 0 }, img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80" },
+    { id: 4, title: "Mombasa 2-Br Nyali Apt", category: "REAL ESTATE", price: "8,500,000 KES", initialTime: { days: 4, hours: 10, minutes: 0, seconds: 0 }, img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" },
+    { id: 5, title: "Massey Ferguson 375 Tractor", category: "HEAVY EQUIP", price: "1,600,000 KES", initialTime: { days: 0, hours: 12, minutes: 45, seconds: 0 }, img: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80" }
   ];
+
+  const renderAuctionGrid = (auctionsList) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+      {auctionsList.map((auction) => (
+        <AuctionCard key={auction.id} auction={auction} onBidClick={handleGridBidClick} />
+      ))}
+    </div>
+  );
 
   return (
     <div className="w-full min-h-screen bg-background">
@@ -135,7 +217,6 @@ export default function LiveBidding() {
                 {currentBid.toLocaleString()} KES
               </p>
 
-              {/* Bidding form / Ended Notice */}
               {isEnded ? (
                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3 text-amber-600 dark:text-amber-400">
                   <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
@@ -181,7 +262,7 @@ export default function LiveBidding() {
 
         </div>
 
-        {/* CATEGORY TABS & AUCTION GRID */}
+        {/* CATEGORY TABS & FILTERABLE AUCTION GRID */}
         <div className="w-full pt-4">
           <Tabs defaultValue="all" className="w-full flex flex-col gap-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
@@ -195,43 +276,19 @@ export default function LiveBidding() {
             </div>
 
             <TabsContent value="all" className="w-full outline-none">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-                {allAuctions.map((auction, auctionIndex) => (
-                  <Card key={auctionIndex} className="overflow-hidden flex flex-col w-full hover:shadow-lg transition-shadow">
-                    <div className="relative w-full h-48 overflow-hidden bg-muted">
-                      <img src={auction.img} alt={auction.title} className="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                    </div>
-                    <CardHeader className="p-5 pb-2">
-                      <Badge variant="secondary" className="w-fit text-[10px] bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 mb-2 tracking-wider">
-                        {auction.category}
-                      </Badge>
-                      <CardTitle className="text-base line-clamp-1">{auction.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-5 pt-0 flex-1">
-                      <p className="text-xl font-bold text-emerald-600">{auction.price}</p>
-                    </CardContent>
-                    <CardFooter className="p-5 pt-0 flex justify-between items-center bg-muted/20 border-t border-border/50">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mt-3">
-                        <Clock className="w-4 h-4 text-amber-500" /> {auction.time} left
-                      </div>
-                      <Button 
-                        size="sm" 
-                        className="bg-emerald-600 hover:bg-emerald-700 mt-3 text-white"
-                        onClick={() => {
-                          if (!auth.currentUser) {
-                            toast.error("Please log in or sign up to bid on items.");
-                            navigate('/login');
-                          } else {
-                            toast.info(`Selected ${auction.title} for bidding.`);
-                          }
-                        }}
-                      >
-                        Bid Now
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
+              {renderAuctionGrid(allAuctions)}
+            </TabsContent>
+
+            <TabsContent value="real estate" className="w-full outline-none">
+              {renderAuctionGrid(allAuctions.filter(item => item.category === "REAL ESTATE"))}
+            </TabsContent>
+
+            <TabsContent value="vehicles" className="w-full outline-none">
+              {renderAuctionGrid(allAuctions.filter(item => item.category === "VEHICLES"))}
+            </TabsContent>
+
+            <TabsContent value="electronics" className="w-full outline-none">
+              {renderAuctionGrid(allAuctions.filter(item => item.category === "ELECTRONICS"))}
             </TabsContent>
           </Tabs>
         </div>
