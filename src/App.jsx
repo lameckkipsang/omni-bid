@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from "sonner";
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -21,6 +22,9 @@ export default function App() {
   return (
     <Router>
       <div className="min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden transition-colors duration-300">
+        {/* Toast Notification Container */}
+        <Toaster richColors position="top-right" />
+        
         <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
         
         <main className="flex-1 w-full">
