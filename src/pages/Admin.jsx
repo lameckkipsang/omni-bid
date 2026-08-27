@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShieldAlert, PackagePlus, Trash2 } from 'lucide-react';
+import { ShieldAlert, PackagePlus, Trash2, Users, TrendingUp } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from 'fi
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("auctions");
   const [auctions, setAuctions] = useState([]);
+  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [title, setTitle] = useState('');
@@ -20,15 +21,20 @@ export default function Admin() {
   const [imgUrl, setImgUrl] = useState('');
 
   useEffect(() => {
-    const fetchAuctions = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch Auctions
         const auctionsSnapshot = await getDocs(collection(db, "auctions"));
         setAuctions(auctionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        
+        // Fetch Users
+        const usersSnapshot = await getDocs(collection(db, "users"));
+        setUsers(usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       } catch (err) {
-        console.error("Error fetching auctions:", err);
+        console.error("Error fetching admin data:", err);
       }
     };
-    fetchAuctions();
+    fetchData();
   }, []);
 
   const handleAddAuction = async (e) => {
@@ -76,6 +82,18 @@ export default function Admin() {
     }
   };
 
+  const handleDeleteUser = async (userId) => {
+    if (window.confirm("Are you sure you want to delete this user from the database?")) {
+      try {
+        await deleteDoc(doc(db, "users", userId));
+        setUsers(users.filter(u => u.id !== userId));
+        toast.success("User deleted successfully.");
+      } catch (err) {
+        toast.error("Failed to delete user.");
+      }
+    }
+  };
+
   return (
     <div className="w-full min-h-screen bg-background p-6 md:p-10">
       <div className="container mx-auto space-y-8">
@@ -90,7 +108,6 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* FIX APPLIED HERE: Added flex and flex-col to force top-to-bottom stacking */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col w-full space-y-6">
           <TabsList className="inline-flex h-auto flex-wrap items-center justify-start rounded-xl bg-muted p-1 text-muted-foreground w-full sm:w-max border border-border">
             <TabsTrigger value="auctions" className="px-6 py-2.5">Manage Auctions</TabsTrigger>
@@ -177,9 +194,83 @@ export default function Admin() {
             </div>
           </TabsContent>
           
-          <TabsContent value="users" className="w-full outline-none focus:outline-none"></TabsContent>
+          <TabsContent value="users" className="w-full outline-none focus:outline-none">
+            <Card className="border-border shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Users className="w-5 h-5 text-emerald-600" /> Registered Platform Users
+                </CardTitle>
+                <CardDescription>View or remove user accounts registered in your Firestore database.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="border border-border rounded-xl overflow-hidden">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-muted/50 border-b border-border text-xs uppercase text-muted-foreground">
+                        <th className="p-4">Full Name</th>
+                        <th className="p-4">Email</th>
+                        <th className="p-4">National ID</th>
+                        <th className="p-4">Role</th>
+                        <th className="p-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border text-sm">
+                      {users.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="p-6 text-center text-muted-foreground">No users found in database.</td>
+                        </tr>
+                      ) : (
+                        users.map((u) => (
+                          <tr key={u.id} className="hover:bg-muted/20">
+                            <td className="p-4 font-semibold">{u.fullName || "N/A"}</td>
+                            <td className="p-4 text-muted-foreground">{u.email}</td>
+                            <td className="p-4">{u.nationalId || "Pending"}</td>
+                            <td className="p-4">
+                              <span className="bg-emerald-500/10 text-emerald-600 px-2.5 py-1 rounded-full text-xs font-bold">
+                                {u.role || "Bidder"}
+                              </span>
+                            </td>
+                            <td className="p-4 text-right space-x-2">
+                              <Button size="sm" variant="outline" onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:bg-red-500/10">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
           
-          <TabsContent value="analytics" className="w-full outline-none focus:outline-none"></TabsContent>
+          <TabsContent value="analytics" className="w-full outline-none focus:outline-none">
+            <Card className="border-border shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-emerald-600" /> Platform Statistics
+                </CardTitle>
+                <CardDescription>Real-time overview of database metrics.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="p-6 bg-muted/30 border border-border rounded-xl">
+                    <p className="text-xs font-bold text-muted-foreground uppercase">Total Users</p>
+                    <p className="text-3xl font-extrabold text-emerald-600 mt-2">{users.length}</p>
+                  </div>
+                  <div className="p-6 bg-muted/30 border border-border rounded-xl">
+                    <p className="text-xs font-bold text-muted-foreground uppercase">Active Listings</p>
+                    <p className="text-3xl font-extrabold text-emerald-600 mt-2">{auctions.length}</p>
+                  </div>
+                  <div className="p-6 bg-muted/30 border border-border rounded-xl">
+                    <p className="text-xs font-bold text-muted-foreground uppercase">System Status</p>
+                    <p className="text-3xl font-extrabold text-emerald-600 mt-2">Online</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
 
       </div>
