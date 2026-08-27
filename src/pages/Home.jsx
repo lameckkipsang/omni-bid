@@ -65,7 +65,7 @@ export default function Home() {
               <p className="text-xs text-zinc-400 uppercase">Current Bid</p>
               <p className="text-2xl font-bold text-emerald-400">2,450,000 KES</p>
             </div>
-            <Link to="/item/1" className="ml-auto">
+            <Link to="/auctions" className="ml-auto">
               <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-lg">
                 View Auction Details <ArrowRight className="w-4 h-4" />
               </Button>
