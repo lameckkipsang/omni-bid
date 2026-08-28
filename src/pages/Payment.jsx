@@ -17,7 +17,6 @@ export default function Payment() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  //Fetch the specific auction data from Firestore
   useEffect(() => {
     const fetchAuction = async () => {
       try {
@@ -37,17 +36,46 @@ export default function Payment() {
     fetchAuction();
   }, [id, navigate]);
 
+  // The Simulated Payment Logic
   const handleSimulatedPayment = (e) => {
     e.preventDefault();
     setIsProcessing(true);
+    
+    // Simulate a 2.5 second network delay for payment processing
+    setTimeout(() => {
+      setIsProcessing(false);
+      setIsSuccess(true);
+      toast.success("Payment simulated successfully!");
+    }, 2500);
   };
 
+  // The Dynamic PDF Generator
   const generateReceipt = () => {
     const doc = new jsPDF();
-    doc.save(`OmniBid_Receipt_${id}.pdf`);
+    
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(5, 150, 105); // Emerald Green
+    doc.text("OmniBid Official Receipt", 20, 20);
+    
+    // Body
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Date: ${new Date().toLocaleString()}`, 20, 40);
+    doc.text(`Bidder Account: ${auth.currentUser?.email}`, 20, 50);
+    doc.text(`Asset Title: ${auction.title}`, 20, 60);
+    doc.text(`Asset Category: ${auction.category}`, 20, 70);
+    
+    doc.setFontSize(14);
+    doc.text(`Bid Amount Secured: ${bidAmount} KES`, 20, 90);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(5, 150, 105);
+    doc.text(`Transaction Status: VERIFIED & HELD IN ESCROW (Simulated)`, 20, 110);
+    
+    doc.save(`OmniBid_Receipt_${auction.id}.pdf`);
   };
 
-  // Shows a loading state while fetching data from the database
   if (!auction) {
     return (
       <div className="w-full min-h-[60vh] flex flex-col items-center justify-center">
@@ -65,12 +93,10 @@ export default function Payment() {
             <div className="text-center mb-6 space-y-2">
               <ShieldCheck className="w-10 h-10 text-emerald-600 mx-auto" />
               <h2 className="text-2xl font-bold tracking-tight">Secure Checkout</h2>
-              {/* Dynamic title */}
               <p className="text-muted-foreground text-sm">Place a secure bid on {auction.title}</p>
             </div>
             
             <form onSubmit={handleSimulatedPayment} className="space-y-6">
-              {/* Dynamic price display box */}
               <div className="p-4 bg-muted/50 rounded-xl text-center border border-border">
                 <p className="text-xs uppercase text-muted-foreground font-bold tracking-wider mb-1">Current Highest Bid</p>
                 <p className="text-2xl font-extrabold text-emerald-600">{auction.price}</p>
