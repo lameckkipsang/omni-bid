@@ -17,6 +17,26 @@ export default function Payment() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  //Fetch the specific auction data from Firestore
+  useEffect(() => {
+    const fetchAuction = async () => {
+      try {
+        const docRef = doc(db, "auctions", id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setAuction({ id: docSnap.id, ...docSnap.data() });
+        } else {
+          toast.error("Auction not found.");
+          navigate('/auctions');
+        }
+      } catch (error) {
+        console.error("Error fetching auction details:", error);
+        navigate('/auctions');
+      }
+    };
+    fetchAuction();
+  }, [id, navigate]);
+
   const handleSimulatedPayment = (e) => {
     e.preventDefault();
     setIsProcessing(true);
@@ -27,6 +47,16 @@ export default function Payment() {
     doc.save(`OmniBid_Receipt_${id}.pdf`);
   };
 
+  // Shows a loading state while fetching data from the database
+  if (!auction) {
+    return (
+      <div className="w-full min-h-[60vh] flex flex-col items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-emerald-600 mb-4" />
+        <p className="text-muted-foreground font-medium">Loading secure checkout...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full min-h-[80vh] flex items-center justify-center bg-background p-6">
       <div className="w-full max-w-md p-8 bg-card border border-border rounded-2xl shadow-sm">
@@ -35,10 +65,17 @@ export default function Payment() {
             <div className="text-center mb-6 space-y-2">
               <ShieldCheck className="w-10 h-10 text-emerald-600 mx-auto" />
               <h2 className="text-2xl font-bold tracking-tight">Secure Checkout</h2>
-              <p className="text-muted-foreground text-sm">Place a secure bid on Item #{id}</p>
+              {/* Dynamic title */}
+              <p className="text-muted-foreground text-sm">Place a secure bid on {auction.title}</p>
             </div>
             
             <form onSubmit={handleSimulatedPayment} className="space-y-6">
+              {/* Dynamic price display box */}
+              <div className="p-4 bg-muted/50 rounded-xl text-center border border-border">
+                <p className="text-xs uppercase text-muted-foreground font-bold tracking-wider mb-1">Current Highest Bid</p>
+                <p className="text-2xl font-extrabold text-emerald-600">{auction.price}</p>
+              </div>
+
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase text-muted-foreground">Enter Your Bid (KES)</label>
                 <Input 
@@ -61,7 +98,7 @@ export default function Payment() {
             <CheckCircle2 className="w-20 h-20 text-emerald-600 mx-auto" />
             <div>
               <h2 className="text-3xl font-bold tracking-tight mb-2">Bid Successful!</h2>
-              <p className="text-muted-foreground">Your payment was processed and the funds are secured.</p>
+              <p className="text-muted-foreground">Your simulated payment was processed and the funds are secured.</p>
             </div>
             <Button onClick={generateReceipt} variant="outline" className="w-full h-12 border-emerald-500 text-emerald-600 hover:bg-emerald-500/10">
               <Download className="w-5 h-5 mr-2" /> Download Official Receipt
