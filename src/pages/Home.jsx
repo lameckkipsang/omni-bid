@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <div className="space-y-20 pb-20">
       
-      {/* 1. HERO SECTION */}
+      {/* HERO SECTION */}
       <header className="relative bg-slate-950 text-white py-24 px-6 overflow-hidden">
         <div className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef')] bg-cover bg-center" />
         <div className="relative max-w-5xl mx-auto space-y-6">
@@ -73,7 +73,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2. SERVICES GRID */}
+      {/* SERVICES GRID */}
       <section className="max-w-6xl mx-auto px-6">
         <h2 className="text-sm font-bold text-emerald-600 uppercase tracking-wider mb-2">Engineered for Integrity</h2>
         <p className="text-2xl font-bold mb-8 text-foreground">Our guarantees for every buyer and seller</p>
@@ -109,7 +109,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. ABOUT US & 4. OFFICES */}
+      {/* ABOUT US and OFFICES */}
       <section className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <h2 className="text-3xl font-bold">Kenya's Trusted Modern Auction Platform</h2>
@@ -172,7 +172,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. FEATURED AUCTIONS */}
+      {/* FEATURED AUCTIONS */}
       <section className="max-w-6xl mx-auto px-6">
         <h2 className="text-3xl font-bold mb-8">Active Featured Auctions</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
