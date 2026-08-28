@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Gavel, ShieldCheck, Lock, Mail, ArrowRight, Loader2, User, Fingerprint } from 'lucide-react';
+import { Gavel, ShieldCheck, Lock, Mail, ArrowRight, Loader2, User, Fingerprint, Eye, EyeOff } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -14,6 +14,7 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [nationalId, setNationalId] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -22,11 +23,9 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      // 1. Create the user in Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2. Enforce National ID requirement by saving it directly to Firestore
       await setDoc(doc(db, "users", user.uid), {
         fullName,
         email: user.email,
@@ -48,7 +47,6 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row w-full overflow-hidden transition-colors duration-300">
       
-      {/* Branding Side */}
       <div className="hidden md:flex flex-col justify-between w-1/2 bg-muted/30 p-12 lg:p-20 border-r border-border">
         <div>
           <Link to="/" className="flex items-center gap-2 text-3xl font-extrabold text-emerald-600 dark:text-emerald-500 mb-8">
@@ -72,7 +70,6 @@ export default function Register() {
         </div>
       </div>
 
-      {/* Form Side */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
         <div className="w-full max-w-md space-y-6">
           
@@ -140,14 +137,21 @@ export default function Register() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input 
-                      type="password" 
+                      type={showPassword ? "text" : "password"} 
                       placeholder="••••••••" 
-                      className="pl-10 bg-background" 
+                      className="pl-10 pr-10 bg-background" 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       minLength={6}
                       required 
                     />
+                    <button 
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
 

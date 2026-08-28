@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Gavel, ShieldCheck, Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
+import { Gavel, ShieldCheck, Lock, Mail, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -93,13 +94,20 @@ export default function Login() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input 
-                      type="password" 
+                      type={showPassword ? "text" : "password"} 
                       placeholder="••••••••" 
-                      className="pl-10 bg-background" 
+                      className="pl-10 pr-10 bg-background" 
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required 
                     />
+                    <button 
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                 </div>
                 <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white mt-4" disabled={isLoading}>
