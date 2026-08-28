@@ -1,11 +1,17 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, Lock, TrendingUp, MapPin, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import lameckProfile from '../assets/lameck2.jpeg';
 
 export default function Home() {
+  const [featuredAuctions, setFeaturedAuctions] = useState([]);
+  const [now, setNow] = useState(Date.now());
+
   const team = [
     { 
       name: "Lameck Kipsang", 
@@ -14,36 +20,29 @@ export default function Home() {
     }
   ];
 
-  const featuredAuctions = [
-    { 
-      title: "Toyota Land Cruiser VX 2019", 
-      category: "VEHICLES", 
-      price: "4,750,000 KES", 
-      time: "05h 24m", 
-      img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" 
-    },
-    { 
-      title: "Samsung Galaxy S24 Ultra", 
-      category: "ELECTRONICS", 
-      price: "115,000 KES", 
-      time: "01d 12h", 
-      img: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80" 
-    },
-    { 
-      title: "Mombasa 2-Br Nyali Apt", 
-      category: "REAL ESTATE", 
-      price: "8,500,000 KES", 
-      time: "04d 10h", 
-      img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80" 
-    },
-    { 
-      title: "Massey Ferguson 375 Tractor", 
-      category: "HEAVY EQUIP", 
-      price: "1,600,000 KES", 
-      time: "12h 45m", 
-      img: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=600&q=80" 
-    }
-  ];
+  // Fetch the latest 4 auctions dynamically
+  useEffect(() => {
+    const q = query(collection(db, "auctions"), orderBy("createdAt", "desc"), limit(4));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setFeaturedAuctions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Update timers every second
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const getRemainingTime = (expiresAt) => {
+    const timeLeft = expiresAt - now;
+    if (timeLeft <= 0) return "Auction Ended";
+    const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
+    const seconds = Math.floor((timeLeft / 1000) % 60);
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
 
   return (
     <div className="space-y-20 pb-20">
@@ -177,28 +176,41 @@ export default function Home() {
       <section className="max-w-6xl mx-auto px-6">
         <h2 className="text-3xl font-bold mb-8">Active Featured Auctions</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {featuredAuctions.map((auction, auctionIndex) => (
-            <Card key={auctionIndex} className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
-              <div className="h-48 overflow-hidden">
-                <img src={auction.img} alt={auction.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-              </div>
-              <CardHeader className="p-5 pb-2">
-                <Badge variant="secondary" className="w-fit text-[10px] bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 mb-2 tracking-wider">
-                  {auction.category}
-                </Badge>
-                <CardTitle className="text-base line-clamp-1">{auction.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="p-5 pt-0 flex-1">
-                <p className="text-xl font-bold text-emerald-600">{auction.price}</p>
-              </CardContent>
-              <CardFooter className="p-5 pt-0 flex justify-between items-center bg-muted/20 border-t border-border/50">
-                <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mt-3">
-                  <Clock className="w-4 h-4 text-amber-500" /> {auction.time} left
-                </div>
-                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 mt-3">Bid Now</Button>
-              </CardFooter>
-            </Card>
-          ))}
+          {featuredAuctions.length === 0 ? (
+            <div className="col-span-4 text-center text-muted-foreground py-10">No featured auctions available.</div>
+          ) : (
+            featuredAuctions.map((auction) => {
+              const timeLeftStr = getRemainingTime(auction.expiresAt);
+              const isEnded = timeLeftStr === "Auction Ended";
+
+              return (
+                <Card key={auction.id} className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+                  <div className="h-48 overflow-hidden relative">
+                    <img src={auction.img} alt={auction.title} className={`w-full h-full object-cover hover:scale-105 transition-transform duration-500 ${isEnded ? 'grayscale' : ''}`} />
+                  </div>
+                  <CardHeader className="p-5 pb-2">
+                    <Badge variant="secondary" className="w-fit text-[10px] bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 mb-2 tracking-wider">
+                      {auction.category}
+                    </Badge>
+                    <CardTitle className="text-base line-clamp-1">{auction.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-5 pt-0 flex-1">
+                    <p className="text-xl font-bold text-emerald-600">{auction.price}</p>
+                  </CardContent>
+                  <CardFooter className="p-5 pt-0 flex justify-between items-center bg-muted/20 border-t border-border/50">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mt-3">
+                      <Clock className="w-4 h-4 text-amber-500" /> {timeLeftStr} left
+                    </div>
+                    <Link to="/auctions">
+                      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 mt-3" disabled={isEnded}>
+                        {isEnded ? "Closed" : "Bid Now"}
+                      </Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              );
+            })
+          )}
         </div>
       </section>
 
