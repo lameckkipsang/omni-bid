@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Clock, ArrowRight, Gavel, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { db } from '../lib/firebase';
+import { toast } from "sonner";
+import { db, auth } from '../lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 export default function LiveBidding() {
   const [auctions, setAuctions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [now, setNow] = useState(Date.now());
+  const navigate = useNavigate();
 
   // Fetch live auctions from Firestore in real-time
   useEffect(() => {
-    // We use a query to order the items by when they were created
     const q = query(collection(db, "auctions"), orderBy("createdAt", "desc"));
-    
-    // onSnapshot listens to the database in real-time. If the admin adds an item, this triggers automatically!
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedAuctions = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -26,13 +26,14 @@ export default function LiveBidding() {
       setIsLoading(false);
     }, (error) => {
       console.error("Error fetching live auctions:", error);
+      toast.error("Failed to connect to the live bidding floor.");
       setIsLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Ticker to update the current time every second so our timers tick down
+  // Ticker to update the current time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(Date.now());
@@ -43,7 +44,6 @@ export default function LiveBidding() {
   // Helper function to format the remaining time
   const getRemainingTime = (expiresAt) => {
     const timeLeft = expiresAt - now;
-    
     if (timeLeft <= 0) return "Auction Ended";
 
     const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
@@ -51,6 +51,16 @@ export default function LiveBidding() {
     const seconds = Math.floor((timeLeft / 1000) % 60);
 
     return `${hours}h ${minutes}m ${seconds}s`;
+  };
+
+  // Intercept bid clicks: redirect to login if unauthenticated, or to payment if verified
+  const handleBidClick = (auctionId) => {
+    if (!auth.currentUser) {
+      toast.error("Authentication required. Please log in to place a bid.");
+      navigate('/login');
+    } else {
+      navigate(`/payment/${auctionId}`); 
+    }
   };
 
   return (
@@ -78,7 +88,7 @@ export default function LiveBidding() {
         {isLoading ? (
           <div className="w-full flex flex-col items-center justify-center py-20">
             <Loader2 className="w-10 h-10 animate-spin text-emerald-600 mb-4" />
-            <p className="text-muted-foreground">Connecting to live auction server...</p>
+            <p className="text-muted-foreground font-medium">Connecting to live auction server...</p>
           </div>
         ) : (
           /* Auctions Grid */
@@ -123,7 +133,7 @@ export default function LiveBidding() {
                     </CardContent>
                     
                     <CardFooter className="pt-0">
-                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white group" disabled={isEnded}>
+                      <Button onClick={() => handleBidClick(item.id)} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white group" disabled={isEnded}>
                         {isEnded ? "Bidding Closed" : "Place Bid"}
                         {!isEnded && <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />}
                       </Button>
