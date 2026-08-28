@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Gavel, ShieldCheck, Lock, Mail, ArrowRight, Loader2, User, Fingerprint } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import { auth, db } from '../lib/firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -25,18 +26,17 @@ export default function Register() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2. Create the user profile in Firestore Database
-      // We use the user.uid as the document ID so it perfectly matches their Auth account
+      // 2. Enforce National ID requirement by saving it directly to Firestore
       await setDoc(doc(db, "users", user.uid), {
         fullName,
         email: user.email,
         nationalId,
-        role: "bidder", // Default role for new signups
+        role: "bidder", 
         createdAt: serverTimestamp()
       });
 
-      toast.success("Account created successfully!");
-      navigate('/'); // Redirect to home or login after success
+      toast.success("Account created successfully! Welcome to OmniBid.");
+      navigate('/auctions'); 
     } catch (error) {
       console.error("Registration error:", error);
       toast.error(error.message || "Failed to create account.");
@@ -46,67 +46,123 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-background p-6">
-      <div className="w-full max-w-md space-y-8 bg-card p-8 rounded-2xl border border-border shadow-sm">
-        
-        <div className="text-center space-y-2">
-          <h2 className="text-3xl font-extrabold tracking-tight">Create an Account</h2>
-          <p className="text-muted-foreground text-sm">Join the platform to start bidding.</p>
+    <div className="min-h-screen bg-background flex flex-col md:flex-row w-full overflow-hidden transition-colors duration-300">
+      
+      {/* Branding Side */}
+      <div className="hidden md:flex flex-col justify-between w-1/2 bg-muted/30 p-12 lg:p-20 border-r border-border">
+        <div>
+          <Link to="/" className="flex items-center gap-2 text-3xl font-extrabold text-emerald-600 dark:text-emerald-500 mb-8">
+            <Gavel className="w-8 h-8" /> OmniBid
+          </Link>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">Join the Bidding Floor.</h1>
+          <p className="text-lg text-muted-foreground max-w-md">
+            Create an account to participate in Kenya's premier auction platform. Strict verification ensures a safe bidding environment for everyone.
+          </p>
         </div>
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full text-emerald-600">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="font-bold">Identity Verification</h4>
+              <p className="text-sm text-muted-foreground">National ID tracking eliminates fraud and fake bidders.</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        <form onSubmit={handleRegister} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Full Name</label>
-            <Input 
-              type="text" 
-              value={fullName} 
-              onChange={(e) => setFullName(e.target.value)} 
-              placeholder="e.g. John Doe" 
-              required 
-            />
+      {/* Form Side */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
+        <div className="w-full max-w-md space-y-6">
+          
+          <div className="md:hidden flex justify-center mb-8">
+             <Link to="/" className="flex items-center gap-2 text-2xl font-extrabold text-emerald-600">
+              <Gavel className="w-6 h-6" /> OmniBid
+            </Link>
           </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Email Address</label>
-            <Input 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-              placeholder="name@example.com" 
-              required 
-            />
-          </div>
+          <Card className="border-border shadow-lg pt-6">
+            <CardHeader className="space-y-2 pb-6">
+              <CardTitle className="text-2xl">Create an Account</CardTitle>
+              <CardDescription>Enter your details to register for the platform.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleRegister} className="space-y-4">
+                
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-muted-foreground uppercase">Full Name</label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                    <Input 
+                      type="text" 
+                      placeholder="e.g. John Doe" 
+                      className="pl-10 bg-background" 
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required 
+                    />
+                  </div>
+                </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase">National ID</label>
-            <Input 
-              type="text" 
-              value={nationalId} 
-              onChange={(e) => setNationalId(e.target.value)} 
-              placeholder="e.g. 12345678" 
-              required 
-            />
-          </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-muted-foreground uppercase">Email Address</label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                    <Input 
+                      type="email" 
+                      placeholder="you@example.com" 
+                      className="pl-10 bg-background" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required 
+                    />
+                  </div>
+                </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase">Password</label>
-            <Input 
-              type="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              placeholder="••••••••" 
-              required 
-              minLength={6}
-            />
-          </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-muted-foreground uppercase">National ID</label>
+                  <div className="relative">
+                    <Fingerprint className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                    <Input 
+                      type="text" 
+                      placeholder="e.g. 12345678" 
+                      className="pl-10 bg-background" 
+                      value={nationalId}
+                      onChange={(e) => setNationalId(e.target.value)}
+                      required 
+                    />
+                  </div>
+                </div>
 
-          <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white mt-4" disabled={isLoading}>
-            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign Up"}
-          </Button>
-        </form>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-muted-foreground uppercase">Password</label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                    <Input 
+                      type="password" 
+                      placeholder="••••••••" 
+                      className="pl-10 bg-background" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      minLength={6}
+                      required 
+                    />
+                  </div>
+                </div>
 
-        <div className="text-center text-sm text-muted-foreground pt-4 border-t border-border">
-          Already have an account? <Link to="/login" className="text-emerald-600 font-semibold hover:underline">Log in</Link>
+                <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white mt-4" disabled={isLoading}>
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : <span className="flex items-center">Sign Up <ArrowRight className="w-4 h-4 ml-2" /></span>}
+                </Button>
+              </form>
+            </CardContent>
+            <CardFooter className="flex justify-center border-t border-border pt-6">
+              <p className="text-sm text-muted-foreground">
+                Already have an account? <Link to="/login" className="text-emerald-600 font-semibold hover:underline">Log in</Link>
+              </p>
+            </CardFooter>
+          </Card>
+          
         </div>
       </div>
     </div>
