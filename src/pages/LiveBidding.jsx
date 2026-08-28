@@ -4,8 +4,7 @@ import { Clock, ArrowRight, Gavel, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
-import { db, auth } from '../lib/firebase';
+import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 export default function LiveBidding() {
@@ -14,7 +13,6 @@ export default function LiveBidding() {
   const [now, setNow] = useState(Date.now());
   const navigate = useNavigate();
 
-  // Fetch live auctions from Firestore in real-time
   useEffect(() => {
     const q = query(collection(db, "auctions"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -26,14 +24,12 @@ export default function LiveBidding() {
       setIsLoading(false);
     }, (error) => {
       console.error("Error fetching live auctions:", error);
-      toast.error("Failed to connect to the live bidding floor.");
       setIsLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Ticker to update the current time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(Date.now());
@@ -41,7 +37,6 @@ export default function LiveBidding() {
     return () => clearInterval(timer);
   }, []);
 
-  // Helper function to format the remaining time
   const getRemainingTime = (expiresAt) => {
     const timeLeft = expiresAt - now;
     if (timeLeft <= 0) return "Auction Ended";
@@ -53,21 +48,10 @@ export default function LiveBidding() {
     return `${hours}h ${minutes}m ${seconds}s`;
   };
 
-  // Intercept bid clicks: redirect to login if unauthenticated, or to payment if verified
-  const handleBidClick = (auctionId) => {
-    if (!auth.currentUser) {
-      toast.error("Authentication required. Please log in to place a bid.");
-      navigate('/login');
-    } else {
-      navigate(`/payment/${auctionId}`); 
-    }
-  };
-
   return (
     <div className="w-full min-h-screen bg-background p-6 md:p-10">
       <div className="container mx-auto space-y-8">
         
-        {/* Page Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-border pb-6 gap-4">
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-2">
@@ -77,21 +61,19 @@ export default function LiveBidding() {
               </span>
               Live Bidding Floor
             </h1>
-            <p className="text-muted-foreground mt-1">Place your bids on real-time active auctions.</p>
+            <p className="text-muted-foreground mt-1">Select an active listing to enter the bidding room and view live bids.</p>
           </div>
           <Badge variant="outline" className="text-emerald-600 bg-emerald-500/10 border-emerald-500/30 px-4 py-1.5 text-sm">
             {auctions.length} Active Listings
           </Badge>
         </div>
 
-        {/* Loading State */}
         {isLoading ? (
           <div className="w-full flex flex-col items-center justify-center py-20">
             <Loader2 className="w-10 h-10 animate-spin text-emerald-600 mb-4" />
             <p className="text-muted-foreground font-medium">Connecting to live auction server...</p>
           </div>
         ) : (
-          /* Auctions Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {auctions.length === 0 ? (
               <div className="col-span-full text-center py-20 text-muted-foreground bg-muted/30 rounded-xl border border-border">
@@ -133,9 +115,12 @@ export default function LiveBidding() {
                     </CardContent>
                     
                     <CardFooter className="pt-0">
-                      <Button onClick={() => handleBidClick(item.id)} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white group" disabled={isEnded}>
-                        {isEnded ? "Bidding Closed" : "Place Bid"}
-                        {!isEnded && <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />}
+                      <Button 
+                        onClick={() => navigate(`/auction/${item.id}`)} 
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white group"
+                      >
+                        {isEnded ? "View Results" : "Enter Bidding Room"}
+                        <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </CardFooter>
                   </Card>
