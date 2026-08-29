@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Clock, Gavel, Loader2, Trophy, ArrowRight } from 'lucide-react';
+import { Clock, Gavel, Loader2, Trophy, ArrowRight, ShieldAlert } from 'lucide-react';
 
 export default function AuctionDetails() {
   const { id } = useParams();
@@ -19,8 +19,8 @@ export default function AuctionDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [now, setNow] = useState(Date.now());
+  const [userProfile, setUserProfile] = useState(null);
 
-  // Fetch auction document details from Firestore
   useEffect(() => {
     const fetchAuctionDoc = async () => {
       try {
@@ -42,13 +42,24 @@ export default function AuctionDetails() {
     fetchAuctionDoc();
   }, [id, navigate]);
 
-  // Real-time ticker for countdown clock
+  // Fetch current user profile to check for National ID
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (auth.currentUser) {
+        const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+        if (userDoc.exists()) {
+          setUserProfile(userDoc.data());
+        }
+      }
+    };
+    fetchUserProfile();
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Real-time listener for bids placed on this item
   useEffect(() => {
     const q = query(collection(db, "auctions", id, "bids"), orderBy("amount", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -66,12 +77,17 @@ export default function AuctionDetails() {
     return `${hours}h ${minutes}m ${seconds}s`;
   };
 
-  // Submit a new bid logic
   const handlePlaceBid = async (e) => {
     e.preventDefault();
     if (!auth.currentUser) {
       toast.error("Please log in to place a bid.");
       navigate('/login');
+      return;
+    }
+
+    // Enforce National ID Check before allowing bid
+    if (!userProfile || !userProfile.nationalId) {
+      toast.error("National ID verification required to prevent fraud. Please update your profile.");
       return;
     }
 
@@ -117,7 +133,6 @@ export default function AuctionDetails() {
   const isEnded = timeLeftStr === "Auction Ended";
   const currentHighestBid = bids.length > 0 ? bids[0].amount : (auction.numericPrice || 0);
 
-  // Verify if the currently logged-in user holds the winning bid
   const isWinner = isEnded && auth.currentUser && (
     (bids.length > 0 && bids[0].bidderUid === auth.currentUser.uid) || 
     (auction.highestBidderUid === auth.currentUser.uid)
@@ -149,7 +164,14 @@ export default function AuctionDetails() {
                 <p className="text-4xl font-extrabold text-emerald-600">{currentHighestBid.toLocaleString()} KES</p>
               </div>
 
-              {/* Active Bidding Form and Winner Checkout Display */}
+              {/* Notice if National ID is missing */}
+              {auth.currentUser && userProfile && !userProfile.nationalId && (
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2">
+                  <ShieldAlert className="w-4 h-4 shrink-0" />
+                  <span>National ID missing. Please ensure your ID is registered to participate in active bidding.</span>
+                </div>
+              )}
+
               {!isEnded ? (
                 <form onSubmit={handlePlaceBid} className="space-y-3 pt-2">
                   <label className="text-xs font-bold uppercase text-muted-foreground">Place a Higher Bid</label>
@@ -188,7 +210,6 @@ export default function AuctionDetails() {
               )}
             </div>
 
-            {/* Live Bid History Feed */}
             <Card className="border-border shadow-sm">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
