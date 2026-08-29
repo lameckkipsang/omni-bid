@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Admin from './pages/Admin';
 import Payment from './pages/Payment';
+import AuctionDetails from './pages/AuctionDetails';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/payment/:id" element={<Payment />} />
+            <Route path="/auction/:id" element={<AuctionDetails />} />
           </Routes>
         </main>
         
