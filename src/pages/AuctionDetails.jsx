@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Clock, Gavel, Loader2 } from 'lucide-react';
+import { Clock, Gavel, Loader2, Trophy, ArrowRight } from 'lucide-react';
 
 export default function AuctionDetails() {
   const { id } = useParams();
@@ -117,6 +117,12 @@ export default function AuctionDetails() {
   const isEnded = timeLeftStr === "Auction Ended";
   const currentHighestBid = bids.length > 0 ? bids[0].amount : (auction.numericPrice || 0);
 
+  // Verify if the currently logged-in user holds the winning bid
+  const isWinner = isEnded && auth.currentUser && (
+    (bids.length > 0 && bids[0].bidderUid === auth.currentUser.uid) || 
+    (auction.highestBidderUid === auth.currentUser.uid)
+  );
+
   return (
     <div className="w-full min-h-screen bg-background p-6 md:p-10">
       <div className="container mx-auto max-w-6xl space-y-8">
@@ -143,8 +149,8 @@ export default function AuctionDetails() {
                 <p className="text-4xl font-extrabold text-emerald-600">{currentHighestBid.toLocaleString()} KES</p>
               </div>
 
-              {/* Active Bidding Form */}
-              {!isEnded && (
+              {/* Active Bidding Form and Winner Checkout Display */}
+              {!isEnded ? (
                 <form onSubmit={handlePlaceBid} className="space-y-3 pt-2">
                   <label className="text-xs font-bold uppercase text-muted-foreground">Place a Higher Bid</label>
                   <div className="flex gap-2">
@@ -161,6 +167,24 @@ export default function AuctionDetails() {
                     </Button>
                   </div>
                 </form>
+              ) : (
+                <div className="p-6 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-center space-y-4">
+                  <Trophy className="w-12 h-12 text-emerald-600 mx-auto" />
+                  <div>
+                    <h3 className="text-lg font-bold">This Auction Has Ended</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {bids.length > 0 ? `Won by ${bids[0].bidderEmail}` : "No bids were placed."}
+                    </p>
+                  </div>
+
+                  {isWinner ? (
+                    <Button onClick={() => navigate(`/payment/${auction.id}`)} className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base gap-2 shadow-md">
+                      Proceed to Checkout & Claim Asset <ArrowRight className="w-5 h-5" />
+                    </Button>
+                  ) : (
+                    <p className="text-xs font-semibold text-muted-foreground">You are not the winning bidder for this asset.</p>
+                  )}
+                </div>
               )}
             </div>
 
