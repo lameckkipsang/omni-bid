@@ -42,13 +42,17 @@ export default function AuctionDetails() {
     fetchAuctionDoc();
   }, [id, navigate]);
 
-  // Fetch current user profile to check for National ID
+  // Fetch current user profile to check for National ID if logged in
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (auth.currentUser) {
-        const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
-        if (userDoc.exists()) {
-          setUserProfile(userDoc.data());
+        try {
+          const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+          if (userDoc.exists()) {
+            setUserProfile(userDoc.data());
+          }
+        } catch (err) {
+          console.error("Error loading user profile:", err);
         }
       }
     };
@@ -79,6 +83,8 @@ export default function AuctionDetails() {
 
   const handlePlaceBid = async (e) => {
     e.preventDefault();
+    
+    // Redirect unauthenticated users straight to login
     if (!auth.currentUser) {
       toast.error("Please log in to place a bid.");
       navigate('/login');
@@ -185,7 +191,7 @@ export default function AuctionDetails() {
                       className="h-12 text-lg"
                     />
                     <Button type="submit" className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold" disabled={isSubmitting}>
-                      {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Bid Now"}
+                      {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : (auth.currentUser ? "Bid Now" : "Log In to Bid")}
                     </Button>
                   </div>
                 </form>
