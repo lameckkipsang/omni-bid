@@ -6,11 +6,13 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { db } from '../lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 export default function LiveBidding() {
   const [auctions, setAuctions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [now, setNow] = useState(Date.now());
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,19 +26,25 @@ export default function LiveBidding() {
           ...doc.data()
         }));
 
-        // Retry safety net for hard-refresh authentication race condition
         if (fetchedAuctions.length === 0) {
           setTimeout(async () => {
-            const retrySnapshot = await getDocs(q);
-            setAuctions(retrySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-            setIsLoading(false);
+            try {
+              const retrySnapshot = await getDocs(q);
+              setAuctions(retrySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            } catch (retryError) {
+              console.error("Retry fetch failed:", retryError);
+              setError(retryError.message);
+            } finally {
+              setIsLoading(false);
+            }
           }, 600);
           return;
         }
 
         setAuctions(fetchedAuctions);
-      } catch (error) {
-        console.error("Error fetching live auctions:", error);
+      } catch (err) {
+        console.error("Error fetching live auctions:", err);
+        setError(err.message);
       } finally {
         setIsLoading(false);
       }
@@ -63,6 +71,15 @@ export default function LiveBidding() {
     return `${hours}h ${minutes}m ${seconds}s`;
   };
 
+  const handleBidClick = (auctionId) => {
+    const auth = getAuth();
+    if (!auth.currentUser) {
+      navigate('/login');
+    } else {
+      navigate(`/auction/${auctionId}`);
+    }
+  };
+
   return (
     <div className="w-full min-h-screen bg-background p-6 md:p-10">
       <div className="container mx-auto space-y-8">
@@ -83,6 +100,12 @@ export default function LiveBidding() {
           </Badge>
         </div>
 
+        {error && (
+          <div className="w-full p-4 bg-red-50 text-red-600 rounded-lg border border-red-200">
+            Error loading auctions: {error}
+          </div>
+        )}
+
         {isLoading ? (
           <div className="w-full flex flex-col items-center justify-center py-20">
             <Loader2 className="w-10 h-10 animate-spin text-emerald-600 mb-4" />
@@ -90,7 +113,7 @@ export default function LiveBidding() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {auctions.length === 0 ? (
+            {auctions.length === 0 && !error ? (
               <div className="col-span-full text-center py-20 text-muted-foreground bg-muted/30 rounded-xl border border-border">
                 No active auctions at the moment. Check back later!
               </div>
@@ -131,7 +154,7 @@ export default function LiveBidding() {
                     
                     <CardFooter className="pt-0">
                       <Button 
-                        onClick={() => navigate(`/auction/${item.id}`)} 
+                        onClick={() => handleBidClick(item.id)} 
                         className="w-full bg-emerald-600 hover:bg-emerald-700 text-white group"
                       >
                         {isEnded ? "View Results" : "Enter Bidding Room"}
