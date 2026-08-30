@@ -59,3 +59,18 @@ To run this project locally, ensure you have Node.js and Git installed. First, c
   VITE_FIREBASE_APP_ID="your_app_id_here"
 
 * **Start the Development Server:** Run npm run dev and navigate to http://localhost:5173 in your browser to view the application.
+## Project Structure
+
+```text
+omni-bid/
+├── public/              # Static assets
+├── src/
+│   ├── assets/          # Images, banners, and preview screenshots
+│   ├── components/      # Reusable UI components (shadcn/ui elements)
+│   ├── lib/             # Firebase configuration and utility initializers
+│   ├── pages/           # Main route views (Landing, LiveBidding, Admin, Login, etc.)
+│   ├── App.jsx          # Root routing configuration
+│   └── main.jsx         # Application entry point
+├── .env                 # Environment variables (Git-ignored)
+├── package.json         # Project dependencies and scripts
+└── README.md            # Project documentation
