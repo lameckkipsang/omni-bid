@@ -32,7 +32,7 @@ OmniBid is a real-time, secure, and transparent online auction platform tailored
 ## 🎨 Figma Design
 The UI/UX for this project was carefully prototyped and designed in Figma prior to development. 
 
-👉 **[View the full OmniBid Figma Design Prototype Here](https://www.figma.com/design/zvv1hqafK5SX29sp5JZ8Vj/Omni-Bid?node-id=0-1&p=f&t=pCoG2rTQGPSa1wNq-0)**
+👉 **[View the full OmniBid Figma Design Prototype Here](https://www.figma.com/design/zvv1hqafK5SX29sp5JZ8Vj/Omni-Bid?node-id=3-10&t=pCoG2rTQGPSa1wNq-1)**
 
 ---
 
