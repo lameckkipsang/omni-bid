@@ -56,6 +56,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
         <div className="hidden md:flex items-center gap-6">
           <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Home</Link>
           <Link to="/auctions" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Live Auctions</Link>
+          <Link to="/support" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Support & FAQ</Link>
         </div>
 
         {/* Right Side Actions */}
