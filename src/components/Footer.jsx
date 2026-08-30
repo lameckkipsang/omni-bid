@@ -63,7 +63,7 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/support" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+              <Link to="/home" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
                 Office Locations
               </Link>
             </li>
