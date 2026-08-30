@@ -5,7 +5,35 @@ import { ChevronDown, ChevronUp, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Support() {
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const faqs = [
+    {
+      q: "How does bidding work?",
+      a: "Every bid on OmniBid is a legally binding contract. Placing a proxy bid registers your maximum threshold. Our platform automatically ups the bid on your behalf by the minimum increment (e.g. 50,000 KES) to keep you in the lead. Anti-snipe logic extends the clock by 2 minutes if a bid lands in the final seconds."
+    },
+    {
+      q: "What is the platform transaction fee?",
+      a: "We charge a standard 5% buyer's premium on all successful auctions. This covers secure escrow, identity verification, and platform maintenance. There are no hidden fees."
+    },
+    {
+      q: "How do I verify my ID?",
+      a: "You can verify your National ID by navigating to your profile settings and entering your ID number. Verification is mandatory before you can place live bids."
+    },
+    {
+      q: "What payment methods are accepted?",
+      a: "We accept secure payments via M-Pesa, standard bank transfers (EFT/RTGS), and major credit cards for initial deposits."
+    },
+    {
+      q: "Can I cancel a bid?",
+      a: "No. Bids cannot be retracted or cancelled once placed to ensure a fair marketplace for all participants. Please ensure you are ready to purchase before confirming a bid."
+    },
+    {
+      q: "How do I contact support?",
+      a: "You can use the contact form on this page, or visit one of our Verified Regional Support Hubs in Nairobi or Mombasa for physical asset verification."
+    }
+  ];
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -79,6 +107,44 @@ export default function Support() {
                 {isSubmitting ? "Sending..." : "Send Message"}
               </Button>
             </form>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold mb-6 tracking-tight">Bidding Questions Answered</h2>
+            <div className="space-y-3">
+              {faqs.map((faq, index) => {
+                const isOpen = openFaqIndex === index;
+                return (
+                  <div 
+                    key={index} 
+                    className={`border ${isOpen ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-border bg-card'} rounded-xl overflow-hidden transition-all duration-200`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
+                      className="flex items-center justify-between w-full p-5 text-left focus:outline-none"
+                    >
+                      <span className={`font-semibold text-sm md:text-base ${isOpen ? 'text-emerald-700 dark:text-emerald-500' : 'text-foreground'}`}>
+                        {faq.q}
+                      </span>
+                      {isOpen ? (
+                        <ChevronUp className="w-5 h-5 text-emerald-600 flex-shrink-0 ml-4" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-4" />
+                      )}
+                    </button>
+                    
+                    <div 
+                      className={`px-5 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-48 pb-5 opacity-100' : 'max-h-0 opacity-0'}`}
+                    >
+                      <p className="text-muted-foreground text-sm leading-relaxed">
+                        {faq.a}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
         </div>
