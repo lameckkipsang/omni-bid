@@ -14,6 +14,7 @@ export default function ManageAuctions({ auctions, setAuctions }) {
   const [category, setCategory] = useState('REAL ESTATE');
   const [price, setPrice] = useState('');
   const [durationHours, setDurationHours] = useState('');
+  const [description, setDescription] = useState(''); // Added description state
   const [imageFile, setImageFile] = useState(null);
 
   const handleAddAuction = async (e) => {
@@ -40,6 +41,7 @@ export default function ManageAuctions({ auctions, setAuctions }) {
         price: `${parseInt(price).toLocaleString()} KES`,
         numericPrice: parseInt(price),
         expiresAt,
+        description, // Saved to Firestore
         img: downloadURL,
         createdAt: serverTimestamp()
       };
@@ -52,6 +54,7 @@ export default function ManageAuctions({ auctions, setAuctions }) {
       setTitle('');
       setPrice('');
       setDurationHours('');
+      setDescription('');
       setImageFile(null);
       
       document.getElementById('image-upload-input').value = '';
@@ -112,6 +115,19 @@ export default function ManageAuctions({ auctions, setAuctions }) {
               <label className="text-xs font-bold text-muted-foreground uppercase">Duration (Hours)</label>
               <Input type="number" value={durationHours} onChange={(e) => setDurationHours(e.target.value)} placeholder="e.g. 48" required />
             </div>
+            
+            {/* New Description / Location Input Field */}
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-muted-foreground uppercase">Description & Location</label>
+              <textarea 
+                value={description} 
+                onChange={(e) => setDescription(e.target.value)} 
+                placeholder="Specify exact location, property specifics, or asset condition..." 
+                className="flex min-h-[90px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-y"
+                required 
+              />
+            </div>
+
             <div className="space-y-1">
               <label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1">
                 <ImagePlus className="w-3.5 h-3.5" /> Upload Image
@@ -149,6 +165,7 @@ export default function ManageAuctions({ auctions, setAuctions }) {
                   <div>
                     <h4 className="font-bold text-sm">{item.title}</h4>
                     <p className="text-xs text-muted-foreground">{item.category} • <span className="text-emerald-600 font-bold">{item.price}</span></p>
+                    {item.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{item.description}</p>}
                   </div>
                 </div>
                 <Button size="sm" variant="outline" onClick={() => handleDeleteAuction(item.id)} className="text-red-500 hover:bg-red-500/10">
