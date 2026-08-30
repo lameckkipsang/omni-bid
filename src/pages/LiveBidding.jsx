@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 export default function LiveBidding() {
   const [auctions, setAuctions] = useState([]);
@@ -14,20 +14,35 @@ export default function LiveBidding() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const q = query(collection(db, "auctions"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedAuctions = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setAuctions(fetchedAuctions);
-      setIsLoading(false);
-    }, (error) => {
-      console.error("Error fetching live auctions:", error);
-      setIsLoading(false);
-    });
+    const fetchAuctions = async () => {
+      try {
+        const q = query(collection(db, "auctions"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        
+        let fetchedAuctions = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
 
-    return () => unsubscribe();
+        // Retry safety net for hard-refresh authentication race condition
+        if (fetchedAuctions.length === 0) {
+          setTimeout(async () => {
+            const retrySnapshot = await getDocs(q);
+            setAuctions(retrySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            setIsLoading(false);
+          }, 600);
+          return;
+        }
+
+        setAuctions(fetchedAuctions);
+      } catch (error) {
+        console.error("Error fetching live auctions:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAuctions();
   }, []);
 
   useEffect(() => {
@@ -41,7 +56,7 @@ export default function LiveBidding() {
     const timeLeft = expiresAt - now;
     if (timeLeft <= 0) return "Auction Ended";
 
-    const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
+    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
     const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
     const seconds = Math.floor((timeLeft / 1000) % 60);
 
