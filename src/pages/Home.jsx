@@ -38,10 +38,10 @@ export default function Home() {
   const getRemainingTime = (expiresAt) => {
     const timeLeft = expiresAt - now;
     if (timeLeft <= 0) return "Auction Ended";
-    const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
+    const totalHours = Math.floor(timeLeft / (1000 * 60 * 60));
     const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
     const seconds = Math.floor((timeLeft / 1000) % 60);
-    return `${hours}h ${minutes}m ${seconds}s`;
+    return `${totalHours}h ${minutes}m ${seconds}s`;
   };
 
   return (
@@ -153,7 +153,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. MEET THE TEAM */}
+      {/* MEET THE TEAM */}
       <section className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold">Meet the Leadership</h2>
@@ -199,7 +199,7 @@ export default function Home() {
                   </CardContent>
                   <CardFooter className="p-5 pt-0 flex justify-between items-center bg-muted/20 border-t border-border/50">
                     <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mt-3">
-                      <Clock className="w-4 h-4 text-amber-500" /> {timeLeftStr} left
+                      <Clock className="w-4 h-4 text-amber-500" /> {isEnded ? timeLeftStr : `${timeLeftStr} left`}
                     </div>
                     <Link to="/auctions">
                       <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 mt-3" disabled={isEnded}>
