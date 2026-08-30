@@ -1,18 +1,61 @@
-# React + Vite
+# OmniBid - Premier Kenyan Auction Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+OmniBid is a real-time, secure, and transparent online auction platform tailored for the Kenyan market. Built using React, Vite, Tailwind CSS, and Firebase, the platform supports live bidding, role-based access control, Google authentication, secure escrow-backed checkouts, and dynamic PDF receipt generation.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📸 Platform Previews
 
-## React Compiler
+### Landing Page
+![OmniBid Landing Page](src\assets\Landingpage.png)
+*Figure 1: The OmniBid landing page featuring clean typography, hero CTAs, and secure platform highlights.*
+![OmniBid Landing Page](src\assets\Landingpage2.png)
+*Figure 2: The OmniBid landing page featuring clean typography, hero CTAs, and secure platform highlights.*
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Live Bidding Floor
+![Live Bidding Floor](src\assets\Auctionspage.png)
+*Figure 3: The live bidding floor showcasing real-time countdown timers, asset categories, and active bidding cards.*
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# omni-bid
-# omni-bid
+## ✨ Key Features
+
+* **Real-Time Live Bidding Floor**: Watch live countdown timers and track real-time competitive bids placed by other participants.
+* **Secure Authentication**: Instant login and registration using Google Auth or standard email/password.
+* **Fraud Prevention & Identity Verification**: Integrated National ID validation checks before users can participate on the active bidding floor.
+* **Locked-Price Checkout**: Automated checkout flow that binds directly to the asset's final winning bid price, capturing M-Pesa or bank reference codes.
+* **Dynamic PDF Receipts**: Generates official transaction receipts instantly upon successful checkout using `jsPDF`.
+* **Comprehensive Admin Dashboard**: Secure management tools for publishing/deleting auctions, monitoring users, and visualizing platform revenue trends via Recharts.
+
+---
+
+## 🎨 Figma Design
+The UI/UX for this project was carefully prototyped and designed in Figma prior to development. 
+
+👉 **[View the full OmniBid Figma Design Prototype Here](https://www.figma.com/design/zvv1hqafK5SX29sp5JZ8Vj/Omni-Bid?node-id=0-1&p=f&t=pCoG2rTQGPSa1wNq-0)**
+
+---
+
+## 🛠️ Tech Stack
+
+* **Frontend**: React, Vite, React Router, Tailwind CSS, Lucide Icons, Recharts, Sonner (Toast notifications)
+* **Backend & Database**: Firebase Authentication, Cloud Firestore (Real-time collections), Firebase Storage
+* **Document Generation**: `jsPDF`
+
+---
+
+## 🚀 Installation & Setup
+
+To run this project locally, ensure you have Node.js and Git installed. First, clone the repository (`git clone https://github.com/lameckkipsang/omni-bid.git`) and navigate into the project directory (`cd omnibid`). 
+
+* **Install Dependencies:** Run `npm install` to install all required packages.
+* **Configure Environment Variables:** Create a new file named `.env` in the root directory of the project and add your Firebase credentials:
+  ```env
+  VITE_FIREBASE_API_KEY="your_api_key_here"
+  VITE_FIREBASE_AUTH_DOMAIN="your_auth_domain_here"
+  VITE_FIREBASE_PROJECT_ID="your_project_id_here"
+  VITE_FIREBASE_STORAGE_BUCKET="your_storage_bucket_here"
+  VITE_FIREBASE_MESSAGING_SENDER_ID="your_messaging_sender_id_here"
+  VITE_FIREBASE_APP_ID="your_app_id_here"
+
+* **Start the Development Server:** Run npm run dev and navigate to http://localhost:5173 in your browser to view the application.
