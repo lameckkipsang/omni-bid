@@ -4,9 +4,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { db, storage } from '../../lib/firebase';
+import { db } from '../../lib/firebase';
 import { collection, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function ManageAuctions({ auctions, setAuctions }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,13 +13,25 @@ export default function ManageAuctions({ auctions, setAuctions }) {
   const [category, setCategory] = useState('REAL ESTATE');
   const [price, setPrice] = useState('');
   const [durationHours, setDurationHours] = useState('');
-  const [description, setDescription] = useState(''); // Added description state
-  const [imageFile, setImageFile] = useState(null);
+  const [description, setDescription] = useState('');
+  const [imageBase64, setImageBase64] = useState('');
+
+  // Convert uploaded file to Base64 string
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageBase64(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAddAuction = async (e) => {
     e.preventDefault();
     
-    if (!imageFile) {
+    if (!imageBase64) {
       toast.error("Please select an image file to upload.");
       return;
     }
@@ -28,10 +39,6 @@ export default function ManageAuctions({ auctions, setAuctions }) {
     setIsLoading(true);
 
     try {
-      const storageRef = ref(storage, `auctions/${Date.now()}_${imageFile.name}`);
-      const uploadResult = await uploadBytes(storageRef, imageFile);
-      const downloadURL = await getDownloadURL(uploadResult.ref);
-
       const durationInMilliseconds = parseInt(durationHours) * 60 * 60 * 1000;
       const expiresAt = Date.now() + durationInMilliseconds;
 
@@ -41,8 +48,8 @@ export default function ManageAuctions({ auctions, setAuctions }) {
         price: `${parseInt(price).toLocaleString()} KES`,
         numericPrice: parseInt(price),
         expiresAt,
-        description, // Saved to Firestore
-        img: downloadURL,
+        description,
+        img: imageBase64, // Store Base64 string directly in Firestore
         createdAt: serverTimestamp()
       };
 
@@ -55,12 +62,12 @@ export default function ManageAuctions({ auctions, setAuctions }) {
       setPrice('');
       setDurationHours('');
       setDescription('');
-      setImageFile(null);
+      setImageBase64('');
       
       document.getElementById('image-upload-input').value = '';
       
     } catch (err) {
-      toast.error("Failed to publish item. Check your storage rules.");
+      toast.error("Failed to publish item. Check your database rules.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -86,7 +93,7 @@ export default function ManageAuctions({ auctions, setAuctions }) {
           <CardTitle className="text-xl flex items-center gap-2">
             <PackagePlus className="w-5 h-5 text-emerald-600" /> Add Auction Item
           </CardTitle>
-          <CardDescription>Upload a file to publish a new asset.</CardDescription>
+          <CardDescription>Publish a new asset to the bidding floor.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleAddAuction} className="space-y-4">
@@ -115,8 +122,6 @@ export default function ManageAuctions({ auctions, setAuctions }) {
               <label className="text-xs font-bold text-muted-foreground uppercase">Duration (Hours)</label>
               <Input type="number" value={durationHours} onChange={(e) => setDurationHours(e.target.value)} placeholder="e.g. 48" required />
             </div>
-            
-            {/* New Description / Location Input Field */}
             <div className="space-y-1">
               <label className="text-xs font-bold text-muted-foreground uppercase">Description & Location</label>
               <textarea 
@@ -127,7 +132,6 @@ export default function ManageAuctions({ auctions, setAuctions }) {
                 required 
               />
             </div>
-
             <div className="space-y-1">
               <label className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-1">
                 <ImagePlus className="w-3.5 h-3.5" /> Upload Image
@@ -136,13 +140,13 @@ export default function ManageAuctions({ auctions, setAuctions }) {
                 id="image-upload-input"
                 type="file" 
                 accept="image/*"
-                onChange={(e) => setImageFile(e.target.files[0])} 
+                onChange={handleImageChange} 
                 className="file:bg-emerald-500/10 file:text-emerald-600 file:border-0 file:rounded-md file:px-2 file:py-1 file:mr-4 file:font-semibold hover:file:bg-emerald-500/20 cursor-pointer"
                 required 
               />
             </div>
             <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white mt-2" disabled={isLoading}>
-              {isLoading ? "Uploading..." : "Publish Listing"}
+              {isLoading ? "Publishing..." : "Publish Listing"}
             </Button>
           </form>
         </CardContent>

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Clock, Gavel, Loader2, Trophy, ArrowRight, ShieldAlert } from 'lucide-react';
+import { Clock, Gavel, Loader2, Trophy, ArrowRight, ShieldAlert, MapPin } from 'lucide-react';
 
 export default function AuctionDetails() {
   const { id } = useParams();
@@ -42,7 +42,6 @@ export default function AuctionDetails() {
     fetchAuctionDoc();
   }, [id, navigate]);
 
-  // Fetch current user profile to check for National ID if logged in
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (auth.currentUser) {
@@ -84,14 +83,12 @@ export default function AuctionDetails() {
   const handlePlaceBid = async (e) => {
     e.preventDefault();
     
-    // Redirect unauthenticated users straight to login
     if (!auth.currentUser) {
       toast.error("Please log in to place a bid.");
       navigate('/login');
       return;
     }
 
-    // Enforce National ID Check before allowing bid
     if (!userProfile || !userProfile.nationalId) {
       toast.error("National ID verification required to prevent fraud. Please update your profile.");
       return;
@@ -149,19 +146,37 @@ export default function AuctionDetails() {
       <div className="container mx-auto max-w-6xl space-y-8">
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="relative h-[350px] sm:h-[450px] w-full rounded-2xl overflow-hidden border border-border bg-muted shadow-sm">
-            <img src={auction.img} alt={auction.title} className="w-full h-full object-cover" />
-            <div className="absolute top-4 right-4">
-              <Badge className={`${isEnded ? 'bg-muted-foreground' : 'bg-red-500 text-white'} border-none flex items-center gap-1.5 px-4 py-1.5 text-sm font-bold`}>
-                <Clock className="w-4 h-4" /> {timeLeftStr}
-              </Badge>
+          <div className="space-y-6">
+            <div className="relative h-[350px] sm:h-[450px] w-full rounded-2xl overflow-hidden border border-border bg-muted shadow-sm">
+              <img src={auction.img} alt={auction.title} className="w-full h-full object-cover" />
+              <div className="absolute top-4 right-4">
+                <Badge className={`${isEnded ? 'bg-muted-foreground' : 'bg-red-500 text-white'} border-none flex items-center gap-1.5 px-4 py-1.5 text-sm font-bold`}>
+                  <Clock className="w-4 h-4" /> {timeLeftStr}
+                </Badge>
+              </div>
             </div>
+
+            {/* Asset Description & Location Card */}
+            {auction.description && (
+              <Card className="border-border shadow-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-emerald-600" /> Asset & Location Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {auction.description}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight">{auction.title}</h1>
-              <p className="text-muted-foreground mt-1">Live Bidding Room</p>
+              <p className="text-muted-foreground mt-1">Live Bidding Room • {auction.category}</p>
             </div>
 
             <div className="p-6 bg-card border border-border rounded-2xl shadow-sm space-y-4">
@@ -170,7 +185,6 @@ export default function AuctionDetails() {
                 <p className="text-4xl font-extrabold text-emerald-600">{currentHighestBid.toLocaleString()} KES</p>
               </div>
 
-              {/* Notice if National ID is missing */}
               {auth.currentUser && userProfile && !userProfile.nationalId && (
                 <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2">
                   <ShieldAlert className="w-4 h-4 shrink-0" />
