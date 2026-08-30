@@ -74,3 +74,10 @@ omnibid/
 ├── .env                 # Environment variables (Git-ignored)
 ├── package.json         # Project dependencies and scripts
 └── README.md            # Project documentation
+```
+## Deployment
+
+To build the application for production deployment (e.g., Vercel, Netlify, or Firebase Hosting):
+
+```bash
+npm run build
