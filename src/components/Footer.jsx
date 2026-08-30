@@ -21,30 +21,78 @@ export default function Footer() {
         <div>
           <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-4">Categories</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Real Estate</Link></li>
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Vehicles</Link></li>
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Electronics</Link></li>
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Heavy Equipment</Link></li>
+            <li>
+              <Link to="/auctions" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Real Estate
+              </Link>
+            </li>
+            <li>
+              <Link to="/auctions" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Vehicles
+              </Link>
+            </li>
+            <li>
+              <Link to="/auctions" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Electronics
+              </Link>
+            </li>
+            <li>
+              <Link to="/auctions" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Heavy Equipment
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div>
           <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-4">Platform</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Live Auctions</Link></li>
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">How It Works</Link></li>
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Verification</Link></li>
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Office Locations</Link></li>
+            <li>
+              <Link to="/auctions" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Live Auctions
+              </Link>
+            </li>
+            <li>
+              <Link to="/support" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                How It Works
+              </Link>
+            </li>
+            <li>
+              <Link to="/login" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Verification
+              </Link>
+            </li>
+            <li>
+              <Link to="/support" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Office Locations
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div>
           <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-4">Legal</h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Privacy Policy</Link></li>
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Terms of Use</Link></li>
-            <li><Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">Bidding Rules</Link></li>
-            <li><Link to="#" className="hover:text-emerald-500 transition-colors">Anti-Fraud</Link></li>
+            <li>
+              <Link to="/support" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link to="/support" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Terms of Use
+              </Link>
+            </li>
+            <li>
+              <Link to="/support" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Bidding Rules
+              </Link>
+            </li>
+            <li>
+              <Link to="/support" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors">
+                Anti-Fraud
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
@@ -55,10 +103,38 @@ export default function Footer() {
           © 2026 OmniBid Platform Kenya. All rights reserved.
         </p>
         <div className="flex gap-4">
-          <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaTwitter className="w-5 h-5" /></Link>
-          <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaFacebook className="w-5 h-5" /></Link>
-          <Link to="#" className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"><FaInstagram className="w-5 h-5" /></Link>
-          <Link to="#" className="hover:text-emerald-500 transition-colors"><FaLinkedin className="w-5 h-5" /></Link>
+          <a 
+            href="https://twitter.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"
+          >
+            <FaTwitter className="w-5 h-5" />
+          </a>
+          <a 
+            href="https://facebook.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"
+          >
+            <FaFacebook className="w-5 h-5" />
+          </a>
+          <a 
+            href="https://instagram.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"
+          >
+            <FaInstagram className="w-5 h-5" />
+          </a>
+          <a 
+            href="https://linkedin.com" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="hover:text-emerald-600 dark:hover:text-emerald-500 transition-colors"
+          >
+            <FaLinkedin className="w-5 h-5" />
+          </a>
         </div>
       </div>
     </footer>
