@@ -7,13 +7,13 @@ OmniBid is a real-time, secure, and transparent online auction platform tailored
 ## 📸 Platform Previews
 
 ### Landing Page
-![OmniBid Landing Page](src\assets\Landingpage.png)
+![OmniBid Landing Page](src/assets/Landingpage.png)
 *Figure 1: The OmniBid landing page featuring clean typography, hero CTAs, and secure platform highlights.*
-![OmniBid Landing Page](src\assets\Landingpage2.png)
+![OmniBid Landing Page](src/assets/Landingpage2.png)
 *Figure 2: The OmniBid landing page featuring clean typography, hero CTAs, and secure platform highlights.*
 
 ### Live Bidding Floor
-![Live Bidding Floor](src\assets\Auctionspage.png)
+![Live Bidding Floor](src/assets/Auctionspage.png)
 *Figure 3: The live bidding floor showcasing real-time countdown timers, asset categories, and active bidding cards.*
 
 ---
