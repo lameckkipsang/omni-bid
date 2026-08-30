@@ -16,7 +16,6 @@ export default function ManageAuctions({ auctions, setAuctions }) {
   const [description, setDescription] = useState('');
   const [imageBase64, setImageBase64] = useState('');
 
-  // Convert uploaded file to Base64 string
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -39,7 +38,7 @@ export default function ManageAuctions({ auctions, setAuctions }) {
     setIsLoading(true);
 
     try {
-      const durationInMilliseconds = parseInt(durationHours) * 60 * 60 * 1000;
+      const durationInMilliseconds = parseFloat(durationHours) * 60 * 60 * 1000;
       const expiresAt = Date.now() + durationInMilliseconds;
 
       const newAuctionData = {
@@ -49,7 +48,7 @@ export default function ManageAuctions({ auctions, setAuctions }) {
         numericPrice: parseInt(price),
         expiresAt,
         description,
-        img: imageBase64, // Store Base64 string directly in Firestore
+        img: imageBase64,
         createdAt: serverTimestamp()
       };
 
