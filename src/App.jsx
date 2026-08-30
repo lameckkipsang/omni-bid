@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import Admin from './pages/Admin';
 import Payment from './pages/Payment';
 import AuctionDetails from './pages/AuctionDetails';
+import Support from './pages/Support';
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/payment/:id" element={<Payment />} />
             <Route path="/auction/:id" element={<AuctionDetails />} />
+            <Route path="/support" element={<Support />} />
           </Routes>
         </main>
         
