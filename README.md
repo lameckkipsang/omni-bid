@@ -4,7 +4,7 @@ OmniBid is a real-time, secure, and transparent online auction platform tailored
 
 ---
 
-## 📸 Platform Previews
+## Platform Previews
 
 ### Landing Page
 ![OmniBid Landing Page](src/assets/Landingpage.png)
@@ -18,7 +18,7 @@ OmniBid is a real-time, secure, and transparent online auction platform tailored
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 * **Real-Time Live Bidding Floor**: Watch live countdown timers and track real-time competitive bids placed by other participants.
 * **Secure Authentication**: Instant login and registration using Google Auth or standard email/password.
@@ -29,14 +29,14 @@ OmniBid is a real-time, secure, and transparent online auction platform tailored
 
 ---
 
-## 🎨 Figma Design
+## Figma Design
 The UI/UX for this project was carefully prototyped and designed in Figma prior to development. 
 
-👉 **[View the full OmniBid Figma Design Prototype Here](https://www.figma.com/design/zvv1hqafK5SX29sp5JZ8Vj/Omni-Bid?node-id=3-10&t=pCoG2rTQGPSa1wNq-1)**
+**[View the full OmniBid Figma Design Prototype Here](https://www.figma.com/design/zvv1hqafK5SX29sp5JZ8Vj/Omni-Bid?node-id=3-10&t=pCoG2rTQGPSa1wNq-1)**
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 * **Frontend**: React, Vite, React Router, Tailwind CSS, Lucide Icons, Recharts, Sonner (Toast notifications)
 * **Backend & Database**: Firebase Authentication, Cloud Firestore (Real-time collections), Firebase Storage
@@ -44,7 +44,7 @@ The UI/UX for this project was carefully prototyped and designed in Figma prior 
 
 ---
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 To run this project locally, ensure you have Node.js and Git installed. First, clone the repository (`git clone https://github.com/lameckkipsang/omni-bid.git`) and navigate into the project directory (`cd omnibid`). 
 
