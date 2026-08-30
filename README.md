@@ -62,7 +62,7 @@ To run this project locally, ensure you have Node.js and Git installed. First, c
 ## Project Structure
 
 ```text
-omni-bid/
+omnibid/
 ├── public/              # Static assets
 ├── src/
 │   ├── assets/          # Images, banners, and preview screenshots
