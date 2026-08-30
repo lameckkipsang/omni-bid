@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, ShieldCheck, Lock, TrendingUp, MapPin, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import lameckProfile from '../assets/lameck2.jpeg';
 
 export default function Home() {
   const [featuredAuctions, setFeaturedAuctions] = useState([]);
   const [now, setNow] = useState(Date.now());
+  const navigate = useNavigate();
 
   const team = [
     { 
@@ -20,16 +22,16 @@ export default function Home() {
     }
   ];
 
-  // Fetch the latest 4 auctions dynamically
   useEffect(() => {
     const q = query(collection(db, "auctions"), orderBy("createdAt", "desc"), limit(4));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setFeaturedAuctions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, (error) => {
+      console.error("Error fetching featured auctions:", error);
     });
     return () => unsubscribe();
   }, []);
 
-  // Update timers every second
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
@@ -42,6 +44,15 @@ export default function Home() {
     const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
     const seconds = Math.floor((timeLeft / 1000) % 60);
     return `${totalHours}h ${minutes}m ${seconds}s`;
+  };
+
+  const handleBidAction = (destination) => {
+    const auth = getAuth();
+    if (!auth.currentUser) {
+      navigate('/login');
+    } else {
+      navigate(destination);
+    }
   };
 
   return (
@@ -64,11 +75,13 @@ export default function Home() {
               <p className="text-xs text-zinc-400 uppercase">Current Bid</p>
               <p className="text-2xl font-bold text-emerald-400">2,450,000 KES</p>
             </div>
-            <Link to="/auctions" className="ml-auto">
-              <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-lg">
-                View Auction Details <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              onClick={() => handleBidAction('/auctions')}
+              className="ml-auto bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-lg"
+            >
+              View Auction Details <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </header>
@@ -201,11 +214,14 @@ export default function Home() {
                     <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mt-3">
                       <Clock className="w-4 h-4 text-amber-500" /> {isEnded ? timeLeftStr : `${timeLeftStr} left`}
                     </div>
-                    <Link to="/auctions">
-                      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 mt-3" disabled={isEnded}>
-                        {isEnded ? "Closed" : "Bid Now"}
-                      </Button>
-                    </Link>
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleBidAction('/auctions')}
+                      className="bg-emerald-600 hover:bg-emerald-700 mt-3" 
+                      disabled={isEnded}
+                    >
+                      {isEnded ? "Closed" : "Bid Now"}
+                    </Button>
                   </CardFooter>
                 </Card>
               );
