@@ -4,8 +4,9 @@ import { Clock, ArrowRight, Gavel, Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { db } from '../lib/firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 export default function LiveBidding() {
@@ -13,6 +14,13 @@ export default function LiveBidding() {
   const [isLoading, setIsLoading] = useState(true);
   const [now, setNow] = useState(Date.now());
   const [error, setError] = useState(null);
+  
+  // ID Verification State
+  const [showIdModal, setShowIdModal] = useState(false);
+  const [nationalIdInput, setNationalIdInput] = useState("");
+  const [isSubmittingId, setIsSubmittingId] = useState(false);
+  const [pendingAuctionId, setPendingAuctionId] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -71,12 +79,54 @@ export default function LiveBidding() {
     return `${hours}h ${minutes}m ${seconds}s`;
   };
 
-  const handleBidClick = (auctionId) => {
+  const handleBidClick = async (auctionId) => {
     const auth = getAuth();
+    
     if (!auth.currentUser) {
       navigate('/login');
-    } else {
-      navigate(`/auction/${auctionId}`);
+      return;
+    }
+
+    try {
+      // Check if the user has a National ID on file
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (userSnap.exists() && userSnap.data().nationalId) {
+        // User has an ID, let them bid
+        navigate(`/auction/${auctionId}`);
+      } else {
+        // User has no ID, trigger modal and remember which auction they clicked
+        setPendingAuctionId(auctionId);
+        setShowIdModal(true);
+      }
+    } catch (err) {
+      console.error("Error checking user verification:", err);
+    }
+  };
+
+  const handleSaveId = async () => {
+    if (!nationalIdInput.trim()) return;
+    setIsSubmittingId(true);
+    
+    try {
+      const auth = getAuth();
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      
+      // Update the ID in Firestore
+      await updateDoc(userRef, {
+        nationalId: nationalIdInput.trim()
+      });
+      
+      // Close modal and redirect to the bidding room
+      setShowIdModal(false);
+      if (pendingAuctionId) {
+        navigate(`/auction/${pendingAuctionId}`);
+      }
+    } catch (err) {
+      console.error("Error saving ID:", err);
+    } finally {
+      setIsSubmittingId(false);
     }
   };
 
@@ -168,6 +218,48 @@ export default function LiveBidding() {
           </div>
         )}
       </div>
+
+      {/* Verification Modal Overlay */}
+      {showIdModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+          <Card className="w-full max-w-md shadow-xl border-border animate-in fade-in zoom-in duration-200">
+            <CardHeader>
+              <CardTitle className="text-xl">Verification Required</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                To ensure bidding integrity, please verify your profile by entering your National ID before entering the live auction.
+              </p>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-muted-foreground uppercase">National ID Number</label>
+                <Input 
+                  placeholder="Enter your ID number" 
+                  value={nationalIdInput}
+                  onChange={(e) => setNationalIdInput(e.target.value)}
+                  className="bg-background"
+                />
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-3 pt-4 border-t border-border mt-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowIdModal(false)}
+                disabled={isSubmittingId}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="bg-emerald-600 hover:bg-emerald-700 text-white" 
+                onClick={handleSaveId} 
+                disabled={!nationalIdInput.trim() || isSubmittingId}
+              >
+                {isSubmittingId ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Save & Continue
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
